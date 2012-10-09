@@ -33,8 +33,13 @@ static void real_time_delay (int64_t num, int32_t denom);
 /* Sets up the 8254 Programmable Interval Timer (PIT) to
    interrupt PIT_FREQ times per second, and registers the
    corresponding interrupt. */
+
+/* for alarm clock (PROJECT 2) */
+static struct list sleep_list;
+static int64_t sleep_start;
+
 void
-timer_init (void) 
+timer_init (void)
 {
   /* 8254 input frequency divided by TIMER_FREQ, rounded to
      nearest. */
@@ -45,6 +50,10 @@ timer_init (void)
   outb (0x40, count >> 8);
 
   intr_register_ext (0x20, timer_interrupt, "8254 Timer");
+
+/* for alarm clock (PROJECT 2) */
+    list_init(&sleep_list);
+
 }
 
 /* Calibrates loops_per_tick, used to implement brief delays. */
@@ -98,11 +107,52 @@ timer_elapsed (int64_t then)
 void
 timer_sleep (int64_t ticks) 
 {
-  int64_t start = timer_ticks ();
 
-  ASSERT (intr_get_level () == INTR_ON);
+    /* for alarm clock (PROJECT 2) */
+    /* BEGIN */
+
+    int64_t start = timer_ticks ();
+
+    ASSERT (intr_get_level () == INTR_ON);
+/*
   while (timer_elapsed (start) < ticks) 
     thread_yield ();
+*/
+    enum intr_level old_level;
+    old_level = intr_disable();
+
+    if(list_empty(&sleep_list)) {
+        st_init(&sleep_list);
+        sleep_start = timer_ticks();
+
+        thread_current() -> sleep_time = ticks;
+        list_push_front(&sleep_list, &thread_current() -> elem);
+    }
+    else {
+        int64_t compensate_ticks = timer_elapsed(sleep_start) + ticks;
+        struct list_elem *current = list_begin(&sleep_list);
+        struct thread * current_thread;
+
+        while(1) {
+            current_thread = list_entry (current, struct thread, elem);
+            if (compensate_ticks - current_thread -> sleep_time < 0 ) {
+                thread_current() -> sleep_time = compensate_ticks;
+                list_insert(current, &thread_current () -> elem);
+                break;
+            }
+            current = list_next(current);
+
+            if(list_end(&sleep_list) == current) {
+                thread_current() -> sleep_time = compensate_ticks;
+                list_push_back(&sleep_list, &thread_current() -> elem);
+                break;
+            }
+        }
+    }
+    thread_block();
+    intr_set_level(old_level);
+
+    /* END */
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
@@ -179,8 +229,29 @@ timer_print_stats (void)
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
+
+    /* for alarm clock (PROJECT 2) */
+    /* BEGIN */
+/*
   ticks++;
   thread_tick ();
+*/
+    ticks++;
+
+    int64_t time = timer_elapsed(sleep_start);
+
+    while(!list_empty(&sleep_list)) {
+        struct list_elem *pick = list_begin(&sleep_list);
+        struct thread *current_thread = list_begin(&sleep_list);
+
+        if(time >= current_thread -> sleep_time) {
+            pick = list_remove(pick);
+            thread_unblock(current_thread);
+        }
+        else
+            break;
+    }
+    thread_tick ();
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer

@@ -100,6 +100,9 @@ struct thread
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
+
+    /* For Alarm Clock(PROJECT 2) */
+    int64_t sleep_time;
   };
 
 /* If false (default), use round-robin scheduler.
