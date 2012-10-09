@@ -102,7 +102,9 @@ struct thread
     unsigned magic;                     /* Detects stack overflow. */
 
     /* For Alarm Clock(PROJECT 2) */
+    /* BEGIN */
     int64_t sleep_time;
+    /* END */
   };
 
 /* If false (default), use round-robin scheduler.

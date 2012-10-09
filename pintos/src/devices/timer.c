@@ -35,8 +35,10 @@ static void real_time_delay (int64_t num, int32_t denom);
    corresponding interrupt. */
 
 /* for alarm clock (PROJECT 2) */
+/* BEGIN */
 static struct list sleep_list;
 static int64_t sleep_start;
+/* END */
 
 void
 timer_init (void)
@@ -52,8 +54,9 @@ timer_init (void)
   intr_register_ext (0x20, timer_interrupt, "8254 Timer");
 
 /* for alarm clock (PROJECT 2) */
+/* BEGIN */
     list_init(&sleep_list);
-
+/* END */
 }
 
 /* Calibrates loops_per_tick, used to implement brief delays. */
@@ -122,7 +125,7 @@ timer_sleep (int64_t ticks)
     old_level = intr_disable();
 
     if(list_empty(&sleep_list)) {
-        st_init(&sleep_list);
+        list_init(&sleep_list);
         sleep_start = timer_ticks();
 
         thread_current() -> sleep_time = ticks;
@@ -131,7 +134,7 @@ timer_sleep (int64_t ticks)
     else {
         int64_t compensate_ticks = timer_elapsed(sleep_start) + ticks;
         struct list_elem *current = list_begin(&sleep_list);
-        struct thread * current_thread;
+        struct thread *current_thread;
 
         while(1) {
             current_thread = list_entry (current, struct thread, elem);
@@ -242,7 +245,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
 
     while(!list_empty(&sleep_list)) {
         struct list_elem *pick = list_begin(&sleep_list);
-        struct thread *current_thread = list_begin(&sleep_list);
+        struct thread *current_thread = list_entry(pick, struct thread, elem);
 
         if(time >= current_thread -> sleep_time) {
             pick = list_remove(pick);
