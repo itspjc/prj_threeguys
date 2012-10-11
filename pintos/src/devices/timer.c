@@ -37,7 +37,7 @@ static void real_time_delay (int64_t num, int32_t denom);
 /* for alarm clock (PROJECT 2) */
 /* BEGIN */
 static struct list sleep_list;
-static int64_t sleep_start;
+static int64_t initial_ticks;
 /* END */
 
 void
@@ -111,40 +111,38 @@ void
 timer_sleep (int64_t ticks) 
 {
 
-    /* for alarm clock (PROJECT 2) */
-    /* BEGIN */
-
     int64_t start = timer_ticks ();
-
     ASSERT (intr_get_level () == INTR_ON);
+
 /*
   while (timer_elapsed (start) < ticks) 
     thread_yield ();
 */
+
+    /* for alarm clock (PROJECT 2) */
+    /* BEGIN */
     enum intr_level old_level;
-    old_level = intr_disable();
+    old_level = intr_disable(); // disable the interrupt for synchronizatoin
 
     if(list_empty(&sleep_list)) {
         list_init(&sleep_list);
-        sleep_start = timer_ticks();
-
+        initial_ticks = timer_ticks();
         thread_current() -> sleep_time = ticks;
         list_push_front(&sleep_list, &thread_current() -> elem);
     }
     else {
-        int64_t compensate_ticks = timer_elapsed(sleep_start) + ticks;
+        int64_t compensate_ticks = timer_elapsed(initial_ticks) + ticks;
         struct list_elem *current = list_begin(&sleep_list);
         struct thread *current_thread;
 
         while(1) {
             current_thread = list_entry (current, struct thread, elem);
-            if (compensate_ticks - current_thread -> sleep_time < 0 ) {
+            if (compensate_ticks - current_thread -> sleep_time < 0) {
                 thread_current() -> sleep_time = compensate_ticks;
                 list_insert(current, &thread_current () -> elem);
                 break;
             }
             current = list_next(current);
-
             if(list_end(&sleep_list) == current) {
                 thread_current() -> sleep_time = compensate_ticks;
                 list_push_back(&sleep_list, &thread_current() -> elem);
@@ -232,24 +230,30 @@ timer_print_stats (void)
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
-
-    /* for alarm clock (PROJECT 2) */
-    /* BEGIN */
 /*
   ticks++;
   thread_tick ();
 */
+
+    /* for alarm clock (PROJECT 2) */
+    /* BEGIN */
     ticks++;
 
-    int64_t time = timer_elapsed(sleep_start);
+    int64_t time = timer_elapsed(initial_ticks);
+    struct list_elem *current; struct thread *current_thread;
+    //struct list_elem *current = list_begin(&sleep_list);
+    //struct thread *current_thread = list_entry(current, struct thread, elem);
 
     while(!list_empty(&sleep_list)) {
-        struct list_elem *pick = list_begin(&sleep_list);
-        struct thread *current_thread = list_entry(pick, struct thread, elem);
+        current = list_front(&sleep_list);
+        //struct list_elem *pick = list_begin(&sleep_list);
+        current_thread = list_entry(current, struct thread, elem);
 
         if(time >= current_thread -> sleep_time) {
-            pick = list_remove(pick);
+            list_pop_front(&sleep_list);
+            //current = list_remove(current);
             thread_unblock(current_thread);
+            //list_pop_front(&sleep_list);
         }
         else
             break;
