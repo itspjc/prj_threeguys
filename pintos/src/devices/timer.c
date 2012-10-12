@@ -131,22 +131,23 @@ timer_sleep (int64_t ticks)
         list_push_front(&sleep_list, &thread_current() -> elem);
     }
     else {
-        int64_t compensate_ticks = timer_elapsed(initial_ticks) + ticks;
+        int64_t duration_ticks = timer_elapsed(initial_ticks) + ticks;
         struct list_elem *current = list_begin(&sleep_list);
+        struct list_elem *list_tail_elem = list_tail(&sleep_list);
         struct thread *current_thread;
 
-        while(1) {
-            current_thread = list_entry (current, struct thread, elem);
-            if (compensate_ticks - current_thread -> sleep_time < 0) {
-                thread_current() -> sleep_time = compensate_ticks;
+        size_t i; size_t sleep_list_length = list_size(&sleep_list);
+
+        for(i=0 ; i < sleep_list_length ; i++) {
+            if (duration_ticks < list_entry (current, struct thread, elem) -> sleep_time) {
+                thread_current() -> sleep_time = duration_ticks;
                 list_insert(current, &thread_current () -> elem);
                 break;
             }
             current = list_next(current);
-            if(list_end(&sleep_list) == current) {
-                thread_current() -> sleep_time = compensate_ticks;
+            if (list_tail_elem == current) {
+                thread_current () -> sleep_time = duration_ticks;
                 list_push_back(&sleep_list, &thread_current() -> elem);
-                break;
             }
         }
     }
@@ -230,35 +231,29 @@ timer_print_stats (void)
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
-/*
+
   ticks++;
   thread_tick ();
-*/
 
     /* for alarm clock (PROJECT 2) */
     /* BEGIN */
-    ticks++;
 
     int64_t time = timer_elapsed(initial_ticks);
-    struct list_elem *current; struct thread *current_thread;
-    //struct list_elem *current = list_begin(&sleep_list);
-    //struct thread *current_thread = list_entry(current, struct thread, elem);
+    struct list_elem *current;
+    struct thread *current_thread;
 
     while(!list_empty(&sleep_list)) {
         current = list_front(&sleep_list);
-        //struct list_elem *pick = list_begin(&sleep_list);
         current_thread = list_entry(current, struct thread, elem);
 
         if(time >= current_thread -> sleep_time) {
             list_pop_front(&sleep_list);
-            //current = list_remove(current);
             thread_unblock(current_thread);
-            //list_pop_front(&sleep_list);
         }
         else
             break;
     }
-    thread_tick ();
+    /* END */
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
