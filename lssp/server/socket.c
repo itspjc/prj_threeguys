@@ -51,6 +51,7 @@ tcp_listen(unsigned short port)
     struct sockaddr_in s;
     int v = 1;
 
+    /* Connect to socket */
     if ((f = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
       perror( "socket() error in tcp_listen.\n" );
