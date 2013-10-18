@@ -75,6 +75,7 @@ eventloop()
         }
         if ( !server )
             main_fd_read = main_fd;
+        
         FD_SET( main_fd_read, &readset);
     }
 

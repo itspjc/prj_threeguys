@@ -22,14 +22,14 @@ main (int argc, char **argv)
     port = get_config_port();
 
     printf( "RTSP port %d.\n", port );
-    lfd = tcp_listen(port); // To Do : What's function of tcp_listen ?
+    lfd = tcp_listen(port); // socket.c
 
     size = sizeof (s); // To Do : recognize structure of sockaddr.
     
     
     for ( ; ; ) {
         
-        fd = tcp_accept(lfd, &s, &size); // To Know
+        fd = tcp_accept(lfd, &s, &size); // socket.c
         
         if ( (pid = fork()) == 0 ) {
             main_fd = fd;
