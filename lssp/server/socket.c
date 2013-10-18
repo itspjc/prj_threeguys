@@ -52,7 +52,7 @@ tcp_listen(unsigned short port)
     int v = 1;
 
     /* Connect to socket */
-    if ((f = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    if ((f = socket(AF_INET, SOCK_STREAM, 0)) < 0) // SOCK_STREAM : TCP Socket, SOCK_DGRAM : UDP Socket
     {
       perror( "socket() error in tcp_listen.\n" );
       terminate(-1);

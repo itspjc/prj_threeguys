@@ -26,8 +26,9 @@ main (int argc, char **argv)
 
     size = sizeof (s); // To Do : recognize structure of sockaddr.
     
+	// Jung Chang Joo
     
-    for ( ; ; ) {
+	for ( ; ; ) {
         
         fd = tcp_accept(lfd, &s, &size); // socket.c
         
