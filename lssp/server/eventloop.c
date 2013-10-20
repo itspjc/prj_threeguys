@@ -79,7 +79,7 @@ eventloop()
         FD_SET( main_fd_read, &readset);
     }
 
-    if ( !server )
+    if ( !server ) // 0이면 서버를 의미하는 듯
         for (i = 0; i < MAX_FDS; i++)
             if (readers[i])
                 FD_SET(i, &readset);
@@ -87,7 +87,7 @@ eventloop()
     if (main_fd && io_write_pending())
         FD_SET(main_fd, &writeset);
 
-    select(FD_SETSIZE, &readset, &writeset, 0, &t);
+    select(FD_SETSIZE, &readset, &writeset, 0, &t); //입출력 다중화 select() 함수
 
     gettimeofday(&now, 0);
     inow = ((now.tv_sec - start.tv_sec) * 1000) + (now.tv_usec / 1000);
@@ -96,8 +96,8 @@ eventloop()
 
     if (main_fd && FD_ISSET(main_fd_read, &readset))
     {
-        io_read( main_fd_read );
-        msg_handler();
+        io_read( main_fd_read ); // messages.c
+        msg_handler(); // 여기서 뭔가 다 이루어진다.
     }
 
     if ( !Quit )

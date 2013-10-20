@@ -42,11 +42,11 @@ init_server(int argc, char **argv)
 {
     int i = 0;
     schedule_init();
-    init_config(argc, argv); // config.h
+    init_config(argc, argv); // config.c
     printf("Control channel port set to %d.\n", get_config_port());
     printf("BasePath set to \"%s\"\n", BasePath);
 
-    for (; i < MAXSTREAMSESSIONS; i++)
+    for (; i < MAXSTREAMSESSIONS; i++) //최대 세션의 수를 초기화 해주는 것 같음
       s_state.sessionlist[i] = 0;
 }
 
@@ -918,143 +918,141 @@ handle_event(int event, int status, char *buf)
 
     switch (s_state.cur_state) {
     case INIT_STATE:
-      {
+    {
         switch (event) {
         case RTSP_GET_METHOD:
-	handle_get_request(buf);
-	break;
+	        handle_get_request(buf);
+	        break;
 
         case RTSP_SETUP_METHOD:
-	if (handle_setup_request(buf))
-	    s_state.cur_state = READY_STATE;
-	break;
+	        if (handle_setup_request(buf))
+	            s_state.cur_state = READY_STATE;
+	        break;
 
         case RTSP_CLOSE_METHOD:
-	handle_close_request();
-	DescribedFlag = 0;
-	break;
+	        handle_close_request();
+	        DescribedFlag = 0;
+	        break;
 
         case RTSP_HELLO_METHOD:
-	handle_hello_request();
-	break;
+	        handle_hello_request();
+	        break;
 
         case RTSP_HELLO_RESPONSE:
-	handle_hello_reply(status);
-	break;
+	        handle_hello_reply(status);
+	        break;
 
         case RTSP_PLAY_METHOD:
         case RTSP_PAUSE_METHOD:
-	send_reply(455, "Accept: OPTIONS, DESCRIBE, SETUP, TEARDOWN\n");
-	break;
+	        send_reply(455, "Accept: OPTIONS, DESCRIBE, SETUP, TEARDOWN\n");
+	        break;
 
         default:
-	printf(sStateErrMsg, event, s_state.cur_state);
-	discard_msg();	
-	send_reply(501, "Accept: OPTIONS, DESCRIBE, SETUP, TEARDOWN\n");
-	break;
+	        printf(sStateErrMsg, event, s_state.cur_state);
+	        discard_msg();	
+	        send_reply(501, "Accept: OPTIONS, DESCRIBE, SETUP, TEARDOWN\n");
+	        break;
         }
         break;
-      }				/* INIT state */
+    }				/* INIT state */
 
     case READY_STATE:
-      {
+    {
         switch (event) {
-        case RTSP_PLAY_METHOD:
-	if (handle_play_request(buf))
-	    s_state.cur_state = PLAY_STATE;
-	break;
+            case RTSP_PLAY_METHOD:
+	            if (handle_play_request(buf))
+	                s_state.cur_state = PLAY_STATE;
+	            break;
 
-        case RTSP_SETUP_METHOD:
-	if (!handle_setup_request(buf))
-	    s_state.cur_state = INIT_STATE;
-	break;
+            case RTSP_SETUP_METHOD:
+	            if (!handle_setup_request(buf))
+	                s_state.cur_state = INIT_STATE;
+	            break;
 
-        case RTSP_CLOSE_METHOD:
-	if (handle_close_request())
-	    s_state.cur_state = INIT_STATE;
-	DescribedFlag = 0;
-	break;
+            case RTSP_CLOSE_METHOD:
+	            if (handle_close_request())
+	                s_state.cur_state = INIT_STATE;
+	            DescribedFlag = 0;
+	            break;
 
-        case RTSP_HELLO_METHOD:
-	handle_hello_request();
-	break;
+            case RTSP_HELLO_METHOD:
+	            handle_hello_request();
+	            break;
 
-        case RTSP_PAUSE_METHOD:	/* method not valid this state. */
-	send_reply(455, "Accept: OPTIONS, SETUP, PLAY, TEARDOWN\n");
-	break;
+            case RTSP_PAUSE_METHOD:	/* method not valid this state. */
+	            send_reply(455, "Accept: OPTIONS, SETUP, PLAY, TEARDOWN\n");
+	            break;
 
-        case RTSP_GET_METHOD:
-	handle_get_request(buf);
-	break;
+            case RTSP_GET_METHOD:
+	            handle_get_request(buf);
+	            break;
 
-        case RTSP_HELLO_RESPONSE:
-	handle_hello_reply(status);
-	break;
+            case RTSP_HELLO_RESPONSE:
+	            handle_hello_reply(status);
+	            break;
 
-        default:
-	printf(sStateErrMsg, event, s_state.cur_state);
-	discard_msg();
-	send_reply(501, "Accept: OPTIONS, SETUP, PLAY, TEARDOWN\n");
-	break;
+            default:
+	            printf(sStateErrMsg, event, s_state.cur_state);
+	            discard_msg();
+	            send_reply(501, "Accept: OPTIONS, SETUP, PLAY, TEARDOWN\n");
+	            break;
         }
         break;
-      }				/* READY state */
+    }				/* READY state */
 
     case PLAY_STATE:
-      {
+    {
         switch (event) {
-        case RTSP_PLAY_METHOD:
-	if (!handle_play_request(buf))
-	    s_state.cur_state = READY_STATE;
-	break;
+            case RTSP_PLAY_METHOD:
+	            if (!handle_play_request(buf))
+	                s_state.cur_state = READY_STATE;
+	            break;
 
-        case RTSP_PAUSE_METHOD:
-	if (handle_pause_request(buf))
-	    s_state.cur_state = READY_STATE;
-	break;
+            case RTSP_PAUSE_METHOD:
+	            if (handle_pause_request(buf))
+	                s_state.cur_state = READY_STATE;
+	            break;
 
-        case RTSP_CLOSE_METHOD:
-	if (handle_close_request())
-	    s_state.cur_state = INIT_STATE;
-	DescribedFlag = 0;
-	break;
+            case RTSP_CLOSE_METHOD:
+	            if (handle_close_request())
+	                s_state.cur_state = INIT_STATE;
+	            DescribedFlag = 0;
+	            break;
 
-        case RTSP_HELLO_METHOD:
-	handle_hello_request();
-	break;
+            case RTSP_HELLO_METHOD:
+	            handle_hello_request();
+	            break;
 
-        case RTSP_HELLO_RESPONSE:
-	handle_hello_reply(status);
-	break;
+            case RTSP_HELLO_RESPONSE:
+	            handle_hello_reply(status);
+	            break;
 
-        case RTSP_GET_METHOD:
-	if (!handle_get_request(buf))
-	    s_state.cur_state = INIT_STATE;
-	break;
+            case RTSP_GET_METHOD:
+	            if (!handle_get_request(buf))
+	                s_state.cur_state = INIT_STATE;
+	            break;
 
-	case RTSP_SETUP_METHOD:
-	if (handle_setup_request(buf))
-	    s_state.cur_state = READY_STATE;
-	else
-		s_state.cur_state = INIT_STATE;
-	break;
+	        case RTSP_SETUP_METHOD:
+	            if (handle_setup_request(buf))
+	                s_state.cur_state = READY_STATE;
+	            else
+		            s_state.cur_state = INIT_STATE;
+	            break;
 
-
-        default:
-	printf(sStateErrMsg, event, s_state.cur_state);
-	discard_msg();
-	send_reply(501, "Accept: OPTIONS, SETUP, PLAY, TEARDOWN\n");
-	break;
+            default:
+	            printf(sStateErrMsg, event, s_state.cur_state);
+	            discard_msg();
+	            send_reply(501, "Accept: OPTIONS, SETUP, PLAY, TEARDOWN\n");
+	            break;
         }
         break;
-      }				/* PLAY state */
+    }				/* PLAY state */
 
-    default:	
-      {
+    default: {
         printf("State error: unknown state=%d, event code=%d\n",
-	       s_state.cur_state, event);
+	    s_state.cur_state, event);
         discard_msg();	
-      }
-      break;
+        }
+        break;
     }				/* end of current state switch */
 }

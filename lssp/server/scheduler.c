@@ -25,7 +25,7 @@ schedule_init()
     int i;
 
     for(i=0;i<MAXSCHEDULE;i++)
-        schedule_list[i].id = INVALID_SCHEDULE_ID;
+        schedule_list[i].id = INVALID_SCHEDULE_ID; // 뭐하는 schedule_list 배열일까...
 }
 
 u_long 

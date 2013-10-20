@@ -33,6 +33,9 @@ get_config_port()
 void
 init_config(int argc, char **argv)
 {
+        /* 별거는 아니고 그냥 처음에 받은 example.cfg 파일 등을 통해
+         * 세팅해주는 기능! 지금은 신경쓰지말고 일단 나중에 원활하게 파싱할 수 있도록 수정 */
+        
     FILE *f;
     int i;
 

@@ -129,10 +129,11 @@ io_read(RTSP_SOCK fd)
 {
     int n;
 
+	// insize 변수는 0으로 초기화되어 있다.
     if ((n = tcp_read(fd, &in_buffer[in_size], sizeof(in_buffer) - in_size)) < 0)
     {
-      printf( "PANIC: tcp_read() error.\n" );
-    	terminate(-1);
+		printf( "PANIC: tcp_read() error.\n" );
+		terminate(-1);
     }
     else
     	in_size += n;
