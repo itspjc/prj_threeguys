@@ -43,7 +43,7 @@ void
 eventloop()
 {
     static struct timeval start = { 0, 0 };
-    struct timeval t = { 0, 10000 };
+    struct timeval t = { 0, 10000 }; //0.01s
     struct timeval now;
     fd_set readset;
     fd_set writeset;
@@ -84,7 +84,7 @@ eventloop()
             if (readers[i])
                 FD_SET(i, &readset);
 
-    if (main_fd && io_write_pending())
+    if (main_fd && io_write_pending()) // messages.c : io_write_pending() : out_size 를 반환
         FD_SET(main_fd, &writeset);
 
     select(FD_SETSIZE, &readset, &writeset, 0, &t); //입출력 다중화 select() 함수
@@ -96,6 +96,12 @@ eventloop()
 
     if (main_fd && FD_ISSET(main_fd_read, &readset))
     {
+        /* io_read 
+         *
+         * 여기에서 tcp 통신에 의해서 요청을 전체 다 읽어온다.
+         * 읽은 요청은 in_buffer 변수에 저장된다.
+         */
+
         io_read( main_fd_read ); // messages.c
         msg_handler(); // 여기서 뭔가 다 이루어진다.
     }

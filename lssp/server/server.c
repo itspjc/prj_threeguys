@@ -914,10 +914,10 @@ udp_data_recv()
 void
 handle_event(int event, int status, char *buf)
 {
-    static char    *sStateErrMsg = "State error: event %d in state %d\n";
+    static char *sStateErrMsg = "State error: event %d in state %d\n";
 
     switch (s_state.cur_state) {
-    case INIT_STATE:
+    case INIT_STATE: // INIT_STATE = 0
     {
         switch (event) {
         case RTSP_GET_METHOD:

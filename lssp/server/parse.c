@@ -325,31 +325,41 @@ int
 valid_response_msg( char *s, u_short *seq_num, u_short *status, char *msg )
 {
     char ver [32];
+
+    char directive [32];
+    char host[256];
+    char version[32];
+
     unsigned int stat;
     unsigned int seq;
     int pcnt; /* parameter count */
 
     *ver = *msg = '\0';
+    
     /* assuming "stat" may not be zero (probably faulty) */
     stat = 0;
     seq = 0;
-
-    pcnt = sscanf( s, " %31s %u %u %255s ", ver, &stat, &seq, msg );
     
-    /*
-    printf("ver : %31s\n", ver);
-    printf("stat : %u\n", stat);
-    printf("seq : %u\n", seq);
-    printf("msg : %255s\n", msg);
-
-    */
+    
+    pcnt = sscanf( s, "%31s %255s %31s", directive, host, version );
+    
+    if (pcnt == 3) {
+        printf("***************************\n");
+        printf("directvie : %s\n", directive);
+        printf("host : %s\n", host);
+        printf("version : %s\n", version);
+        printf("***************************\n");
+    }
+    else {
+        printf("%s\n", s);
+    }
 
     /* check for a valid response token. */
-    if ( strncasecmp ( ver, "RTSP/", 5 ) )
+    if (strncasecmp (directive, "rtsp://", 7 ))
         return( 0 );  /* not a response message */
 
     /* confirm that at least the version, status code and sequence are there. */
-    if ( pcnt < 3 || stat == 0 )
+    if ( pcnt == 3)
         return( 0 );  /* not a response message */
 
 
@@ -361,34 +371,33 @@ int
 validate_method( char *s )
 {
     TKN *m;
-    char method [32];
-    char object [256];
-    char ver [32];
-    unsigned int seq;
+    char directive [32];
+    char host [256];
+    char version [32];
+    //unsigned int seq;
     int pcnt;             /* parameter count */
 
-    *method = *object = '\0';
-    seq = 0;
+    *directive = *host = '\0';
 
     /* parse first line of message header as if it were a request message */
-    pcnt = sscanf( s, " %31s %255s %31s %u ", method, object, ver, &seq );
-    if ( pcnt != 4 )
+    pcnt = sscanf( s, "%31s %255s %31s", directive, host, version);
+    if ( pcnt != 3 )
     {
         discard_msg(); /* remove remainder of message from in_buffer */
         return( -2 );
     }
-
+    /* 어떤 Directive인지 찾는다 */
     for ( m = Methods; m->code != -1; m++ )
-        if ( !strcmp( m->token, method ) )
+        if ( !strcmp( m->token, directive ) )
             break;
 
-    RTSP_recv_seq_num = seq;    /* set the current method request seq. number. */
+    //RTSP_recv_seq_num = seq;    /* set the current method request seq. number. */
     if ( m->code == -1 )
     {
         discard_msg(); /* remove remainder of message from in_buffer */
         send_reply( 400, 0 );    /* Bad Request */
     }
-
+    printf("%s, %d \n", s, m->code);
     return( m->code );
 }
 

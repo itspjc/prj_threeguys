@@ -127,7 +127,7 @@ RTSP_read( char *buffer, int buflen )
     /* transfer bytes from first line of message header for parsing. */
     llen = strcspn( in_buffer, "\r\n" );
 
-    if (!llen) {
+    if (!llen) { // 아마 메세지 들어올때까지 여기에 머물러 있으라는 말인가...
       remove_msg(2);
       return RTSP_read(buffer, buflen);
     }
@@ -162,12 +162,28 @@ msg_handler()
     u_short seq_num;
     u_short status;
 
-    while( RTSP_read( buffer, BLEN ) ) // Buffer 에 불려온 내용이 쓰여진다.
+    while( RTSP_read( buffer, BLEN ) ) // buffer 변수에 in_buffer의 내용이 복사된다.
     {
-        /* check for response message. */
-        r = valid_response_msg( buffer, &seq_num, &status, msg ); //parse.c 성공하면 1, 아니면 0
+        /* check for response message.
+         *
+         * valid_response_msg
+         * 어떤 메세지인지 보는 것
+         * 지금은 별로 필요없어서 주석처리 해놓음
+         * Return value :
+         * Request from client - 0, Response from server - 1
+         */
+        //r = valid_response_msg( buffer, &seq_num, &status, msg ); //parse.c
+
+        /* validate_method :
+         * 1. 버퍼 내용을 읽어서 실제적인 파싱이 이루어지는 곳
+         * 2. 리턴되는 opcode를 통해 어떤 명령을 수행해야 될지 handle_event()가 결정
+         */
+
+        opcode = validate_method(buffer); //parse.c
+        
+        /* 프로토콜의 유효성을 검사하는 부분인데 지금은 볼필요 없음
         if ( !r )
-        {  /* not a response message, check for method request. */
+        {
             opcode = validate_method( buffer );
             if ( opcode < 0 )
             {
@@ -186,15 +202,15 @@ msg_handler()
             }
             status = 0;
         }
-        else if ( r != -1 ) // 이 루프로 흘러들어온다.
+        else if ( r != -1 )
         {
             opcode = RTSP_last_request + 100;
             if ( status > 202 )
                 printf( "Response had status = %d.\n", status );
         }
         else
-            return;      /* response message was not valid, ignore it. */
-
+            return;
+        */
         handle_event( opcode, status, buffer ); //server.c:915
     }
 }

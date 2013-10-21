@@ -114,8 +114,6 @@ tcp_accept(int fd, struct sockaddr *addr, socklen_t *addrlen)
     struct hostent *hp;
     const char *lp;
 
-    printf("Accept function \n");
-
     if ((f = accept (fd, addr, addrlen)) < 0)
     {
         printf( "accept() error in tcp_accept.\n" );
@@ -136,6 +134,8 @@ tcp_accept(int fd, struct sockaddr *addr, socklen_t *addrlen)
      {
           syslog(LOG_ERR, "connection from %x", *((int *) &(peer.sa_data[2])));
      }
+
+     printf("accept() called! \n");
      return f;
 }
 
@@ -143,10 +143,8 @@ int
 tcp_read(int fd, void *buffer, int nbytes)
 {
     int n;
-
-    printf("Please\n");
-
     n = read(fd, buffer, nbytes);
+    
     if ( debug_toggle )
     {
         printf ("Read:\n");

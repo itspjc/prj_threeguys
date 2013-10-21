@@ -4,7 +4,7 @@
 
 #define RTSP_DEFAULT_PORT		554
 
-#define RTSP_VER  "RTSP/0.1"
+#define RTSP_VER  "RTSP/1.0"
 
 /* Description Formats */
 #define DESCRIPTION_SDP_FORMAT 1
