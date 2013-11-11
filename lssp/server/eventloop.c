@@ -30,6 +30,9 @@ eventloop_init()
 
     for (i = 0; i < MAX_FDS; i++)
         readers[i] = 0;
+
+    printf("event loop initialized.\n");
+    printf("Now go into event loop.\n");
 }
 
 void
@@ -49,7 +52,7 @@ eventloop()
     int i;
     
     if ( in_eventloop || Quit )
-        return;      /* prevent re-entrant behaviour if called off timer event */
+        return;      // prevent re-entrant behaviour if called off timer event
     
     in_eventloop = 1;
     
@@ -83,7 +86,7 @@ eventloop()
             if (readers[i])
                 FD_SET(i, &readset);
 
-    if (main_fd && io_write_pending()) // messages.c : io_write_pending() : out_size 를 반환
+    if (main_fd && io_write_pending()) // msg_handler.c : io_write_pending() : out_size 를 반환
         FD_SET(main_fd, &writeset);
 
     select(FD_SETSIZE, &readset, &writeset, 0, &t); //입출력 다중화 select() 함수
@@ -101,7 +104,7 @@ eventloop()
          * 읽은 요청은 in_buffer 변수에 저장된다.
          */
 
-        io_read( main_fd_read ); // messages.c
+        io_read( main_fd_read ); // msg_handler.c
         msg_handler(); // 여기서 뭔가 다 이루어진다.
     }
 

@@ -17,11 +17,17 @@ main (int argc, char **argv)
     socklen_t size = 0;
     struct sockaddr_in s;
     u_short port;
+    char *media_path;
 
-    init_server(argc, argv); // server.c 서버를 초기화하는 작업 
-    port = get_config_port();
+    init_server(argc, argv); // Server initialize ( server.c )
+    port = get_config_port(); // Return port number. ( config.c )
+    media_path = (char *) get_media_path(); // Return media path ( config.c )
 
-    printf( "RTSP port %d.\n", port );
+    printf("================================");
+    printf( "ThreeGuys RTSP Server Start \n");
+    printf( "RTSP port : %d.\n", port );
+    printf( "Default media path :  %s.\n", media_path);
+    printf("================================");
     
     /* tcp_listen : call listen () */
 
@@ -35,6 +41,7 @@ main (int argc, char **argv)
         fd = tcp_accept(lfd,(struct sockaddr *) &s, &size); // socket.c, fd : client socket.
         
         //if ( (pid = fork()) == 0 ) {
+            
             // allocate client socket fd to main_fd.
             main_fd = fd;
             main_fd_read = fd;

@@ -17,5 +17,6 @@ struct url_info
 
 struct url_info *get_url_info(const char *urlpath);
 u_short get_config_port();
+char * get_media_path();
 #define MAX_BASE_PATH 256
 char BasePath [MAX_BASE_PATH];

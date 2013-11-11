@@ -1,5 +1,3 @@
-
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -126,6 +124,7 @@ full_msg_rcvd( void )
     return( 1 );
 }
 
+/* Parsing Only RTSP Header (first line) */ 
 int
 RTSP_read( char *buffer, int buflen )
 {
@@ -169,11 +168,12 @@ void
 msg_handler()
 {
     char buffer[BLEN];
-    char msg [STATUS_MSG_LEN]; /* for status string on response messages */
+    //char msg [STATUS_MSG_LEN]; /* for status string on response messages */
     int  opcode;
-    int  r;
-    u_short seq_num;
+    //int  r;
+    //u_short seq_num;
     u_short status;
+    status = 0;
 
     while( RTSP_read( buffer, BLEN ) ) // buffer 변수에 in_buffer의 내용이 복사된다.
     {
@@ -329,8 +329,9 @@ io_write(RTSP_SOCK fd)
         printf( "PANIC: tcp_write() error.\n" );
         terminate(-1);
     }
-    else
+    else {
         out_size = 0;
+        printf("Write to Client socket successfully done.\n");
 }
 
 /* Fill in_buffer from network, used from eventloop only */
@@ -339,7 +340,8 @@ io_read(RTSP_SOCK fd)
 {
     int n;
 
-	// insize 변수는 0으로 초기화되어 있다.
+	// in_size 변수는 0으로 초기화되어 있다.
+    // n : btyes that read from client socket.
     if ((n = tcp_read(fd, &in_buffer[in_size], sizeof(in_buffer) - in_size)) < 0)
     {
 		printf( "PANIC: tcp_read() error.\n" );
@@ -349,7 +351,7 @@ io_read(RTSP_SOCK fd)
     	in_size += n;
 
     if(!n)
-	    terminate(0);	/* XXX */
+	    terminate(0);
 }
 
 int

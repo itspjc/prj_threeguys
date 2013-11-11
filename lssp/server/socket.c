@@ -42,6 +42,9 @@ tcp_open(struct sockaddr *name, int namelen)
 int
 tcp_listen(unsigned short port)
 {
+     
+     printf("TCP LISTEN START! \n");
+
      int f;
      struct sockaddr_in s;
      int v = 1;
@@ -67,11 +70,16 @@ tcp_listen(unsigned short port)
         terminate(-1);
      }
 
+     printf("bind() function successfully called.\n");
+
      if (listen(f, 5) < 0) // 서버 소켓까지 완성
      {
         perror( "listen() error in tcp_listen.\n" );
         terminate(-1);
      }
+
+     printf("listen() function successfully called.\n");
+     printf("Now ready for client request...\n");
 
      return f;
 }
@@ -130,7 +138,7 @@ tcp_accept(int fd, struct sockaddr *addr, socklen_t *addrlen)
           syslog(LOG_ERR, "connection from %x", *((int *) &(peer.sa_data[2])));
      }
 
-     printf("accept() called! \n");
+     printf("accept() function successfully called! (Client socket fd : %d.)\n", f);
      return f;
 }
 
@@ -155,6 +163,9 @@ tcp_write(int fd, void *buffer, int nbytes)
      int n;
 
     n = write(fd, buffer, nbytes);
+    printf("Write message start \n");
+    printf("%s", (char *) buffer);
+    printf("Message end\n");
     if ( debug_toggle )
     {
         printf ("Write:\n");
