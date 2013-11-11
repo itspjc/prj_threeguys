@@ -2,9 +2,9 @@
 #ifndef _UTIL_H_
 #define _UTIL_H_
 
-#include "machdefs.h"
-#include "session.h"
-#include "socket.h"
+#include "header/machdefs.h"
+#include "header/session.h"
+#include "header/socket.h"
 
 void dump_buffer(char *, int);
 int parse_url(const char *url, char *server, u_short *port, char *file_name);

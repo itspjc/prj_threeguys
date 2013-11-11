@@ -2,9 +2,9 @@
 #ifndef _SESSION_H_
 #define _SESSION_H_
 
-#include "socket.h"
+#include "header/socket.h"
 #include "time.h"
-#include "machdefs.h"
+#include "header/machdefs.h"
 
 #define MAXSESSIONS 5
 #define MAXSTREAMSESSIONS 20

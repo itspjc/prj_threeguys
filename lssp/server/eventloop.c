@@ -7,12 +7,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "machdefs.h"
-#include "eventloop.h"
-#include "messages.h"
-#include "msg_handler.h"
-#include "scheduler.h"
-#include "socket.h"
+#include "header/machdefs.h"
+#include "header/eventloop.h"
+#include "header/msg_handler.h"
+#include "header/scheduler.h"
+#include "header/socket.h"
 
 
 int Quit = 0;

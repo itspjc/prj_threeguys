@@ -10,10 +10,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "machdefs.h"
-#include "rtsp.h"
-#include "config.h"
-#include "util.h"
+#include "header/machdefs.h"
+#include "header/rtsp.h"
+#include "header/config.h"
+#include "header/util.h"
 
 extern void terminate( int code );
 

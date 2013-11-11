@@ -2,8 +2,8 @@
 #ifndef _SERVER_H_
 #define _SERVER_H_
 
-#include "eventloop.h"
-#include "socket.h"
+#include "header/eventloop.h"
+#include "header/socket.h"
 
 /* external events */
 #define STREAM_CLOSE	11000

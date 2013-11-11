@@ -13,20 +13,20 @@
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 
-#include "machdefs.h"
-#include "socket.h"
-#include "config.h"
-#include "eventloop.h"
-#include "messages.h"
-#include "socket.h"
-#include "scheduler.h"
-#include "server.h"
-#include "util.h"
-#include "rtsp.h"
-#include "streamer.h"
-#include "session.h"
-#include "parse.h"
-#include "rtp.h"
+#include "header/machdefs.h"
+#include "header/socket.h"
+#include "header/config.h"
+#include "header/eventloop.h"
+#include "header/msg_handler.h"
+#include "header/socket.h"
+#include "header/scheduler.h"
+#include "header/server.h"
+#include "header/util.h"
+#include "header/rtsp.h"
+#include "header/streamer.h"
+#include "header/session.h"
+#include "header/parse.h"
+#include "header/rtp.h"
 
 struct SESSION_STATE s_state;
 static u_short    StreamSessionID = 0;

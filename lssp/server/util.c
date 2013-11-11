@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include "machdefs.h"
-#include "rtsp.h"
-#include "messages.h"
-#include "util.h"
+#include "header/machdefs.h"
+#include "header/rtsp.h"
+#include "header/msg_handler.h"
+#include "header/util.h"
 
 
 int debug_toggle = 0;

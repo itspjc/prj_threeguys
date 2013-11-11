@@ -1,10 +1,16 @@
 
-#ifndef _MESSAGES_H_
-#define _MESSAGES_H_
+#ifndef _MSG_HANDLER_H_
+#define _MSG_HANDLER_H_
+
+#define BLEN            4096
+#define STATUS_MSG_LEN  256
+
+void msg_handler();
 
 
-#include "socket.h"
-#include "session.h"
+
+#include "header/socket.h"
+#include "header/session.h"
 
 u_short RTSP_last_request;       /* code for last request message sent */
 u_short RTSP_send_seq_num;
@@ -28,4 +34,4 @@ void bread(char *buffer, u_short len);
 void bwrite(char *buffer, u_short len);
 
 
-#endif /* _MESSAGES_H_ */
+#endif /* _MSG_HANDLER_H_ */

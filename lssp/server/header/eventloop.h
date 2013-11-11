@@ -2,7 +2,7 @@
 #ifndef _EVENTLOOP_H_
 #define _EVENTLOOP_H_
 
-#include "socket.h"
+#include "header/socket.h"
 
 extern u_long inow;            /* Internal time format (ms) */ 
 

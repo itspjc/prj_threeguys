@@ -13,18 +13,18 @@
 #include <netinet/in.h>
 #define OPEN_FLAGS O_RDONLY
 
-#include "machdefs.h"
-#include "eventloop.h"
-#include "messages.h"
-#include "rtsp.h"
-#include "server.h"
-#include "streamer.h"
-#include "scheduler.h"
-#include "socket.h"
-#include "rtp.h"
-#include "util.h"
-#include "session.h"
-#include "config.h"
+#include "header/machdefs.h"
+#include "header/eventloop.h"
+#include "header/msg_handler.h"
+#include "header/rtsp.h"
+#include "header/server.h"
+#include "header/streamer.h"
+#include "header/scheduler.h"
+#include "header/socket.h"
+#include "header/rtp.h"
+#include "header/util.h"
+#include "header/session.h"
+#include "header/config.h"
 
 extern struct SESSION_STATE s_state;
 extern char *alloc_path_name ( char *base_path, char *file_path );

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "scheduler.h"
+#include "header/scheduler.h"
 
 #define MAXSCHEDULE 20
 #define INVALID_SCHEDULE_ID ((u_long)-1)

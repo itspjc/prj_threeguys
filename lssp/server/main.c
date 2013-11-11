@@ -1,12 +1,12 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "machdefs.h"
-#include "eventloop.h"
-#include "socket.h"
-#include "rtsp.h"
-#include "config.h"
-#include "server.h"
+#include "header/machdefs.h"
+#include "header/eventloop.h"
+#include "header/socket.h"
+#include "header/rtsp.h"
+#include "header/config.h"
+#include "header/server.h"
 
 int
 main (int argc, char **argv)
@@ -26,8 +26,7 @@ main (int argc, char **argv)
     /* tcp_listen : call listen () */
 
     lfd = tcp_listen(port); // socket.c, lfd : server socket fd.
-
-    size = sizeof (s); // To Do : recognize structure of sockaddr.
+    size = sizeof (s);
     
     
     for ( ; ; ) {
@@ -43,7 +42,7 @@ main (int argc, char **argv)
             eventloop_init(); // eventloop.c , Description table 초기화인데 왜하는지 모르겠음
             
             while (1)
-                eventloop();
+                eventloop(); // eventloop.c
     
             return 0;
             close(fd); // close server socket. 

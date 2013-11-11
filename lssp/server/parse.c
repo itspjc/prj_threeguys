@@ -6,11 +6,11 @@
 #include <sys/types.h>
 #include <ctype.h>
 
-#include "machdefs.h"
-#include "messages.h"
-#include "parse.h"
-#include "util.h"
-#include "session.h"
+#include "header/machdefs.h"
+#include "header/msg_handler.h"
+#include "header/parse.h"
+#include "header/util.h"
+#include "header/session.h"
 
 extern void terminate(int errorcode);
 

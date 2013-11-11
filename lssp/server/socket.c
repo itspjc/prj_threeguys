@@ -1,22 +1,17 @@
-
 #include <syslog.h>
-/*
-#include <varargs.h>
-*/
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
-
 #include <netinet/in.h>
 
 #include <stdio.h>
 #include <unistd.h>
 
-#include "machdefs.h"
-#include "session.h"
-#include "socket.h"
-#include "util.h"
+#include "header/machdefs.h"
+#include "header/session.h"
+#include "header/socket.h"
+#include "header/util.h"
 
 extern int debug_toggle;
 extern void terminate(int errorcode);
