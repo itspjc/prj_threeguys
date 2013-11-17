@@ -367,38 +367,3 @@ valid_response_msg( char *s, u_short *seq_num, u_short *status, char *msg )
     return( 1 );
 }
 
-int
-validate_method( char *s )
-{
-    TKN *m;
-    char directive [32];
-    char host [256];
-    char version [32];
-    //unsigned int seq;
-    int pcnt;             /* parameter count */
-
-    *directive = *host = '\0';
-
-    /* parse first line of message header as if it were a request message */
-    pcnt = sscanf( s, "%31s %255s %31s", directive, host, version);
-    if ( pcnt != 3 )
-    {
-        discard_msg(); /* remove remainder of message from in_buffer */
-        return( -2 );
-    }
-    /* 어떤 Directive인지 찾는다 */
-    for ( m = Methods; m->code != -1; m++ )
-        if ( !strcmp( m->token, directive ) )
-            break;
-
-    //RTSP_recv_seq_num = seq;    /* set the current method request seq. number. */
-    if ( m->code == -1 )
-    {
-        discard_msg(); /* remove remainder of message from in_buffer */
-        send_reply( 400, 0 );    /* Bad Request */
-    }
-    printf("%s, %d \n", s, m->code);
-    return( m->code );
-}
-
-
