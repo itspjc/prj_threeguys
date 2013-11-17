@@ -86,7 +86,7 @@ schedule_execute(u_long time)
       if((schedule_list[i].id != INVALID_SCHEDULE_ID) && 
          (schedule_list[i].time <= time))
       {
-         schedule_list[i].fn(schedule_list[i].arg);
+         schedule_list[i].fn(schedule_list[i].arg);		// 여기서 RTP packet이 socket에 써짐 
          schedule_list[i].id = INVALID_SCHEDULE_ID;
       }
    }
