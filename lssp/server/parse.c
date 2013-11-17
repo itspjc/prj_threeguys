@@ -100,6 +100,46 @@ TKN Status [] =
 };
 
 
+int
+validate_method( char *s )
+{
+    TKN *m;
+    char directive [32];
+    char host [256];
+    char version [32];
+    int pcnt; /* parameter count */
+
+    *directive = *host = '\0';
+
+    /* pcnt = 3 이면 RTSP 첫번째 줄을 나타냄 */
+    pcnt = sscanf( s, "%31s %255s %31s", directive, host, version);
+    
+    if (pcnt != 3)
+    {
+        discard_msg(); /* remove remainder of message from in_buffer */
+        return(-2);
+    }
+    
+
+    /* 어떤 Directive인지 찾는다 */
+    for (m = Methods; m->code != -1; m++)
+        if (!strcmp( m->token, directive ))
+            break;
+
+    // 현재 m 은 해당 token 을 가지고 있음
+    
+    
+    if ( m->code == -1 )
+    {
+        discard_msg(); /* remove remainder of message from in_buffer */
+        printf("No Existed Directive.\n");
+    }
+
+    printf("%s, %d \n", s, m->code); // 읽은 한줄이랑 코드네임 출력해본다.
+    return( m->code ); //opcode 리턴
+}
+
+
 char *
 get_stat( int code )
 {
