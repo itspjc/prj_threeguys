@@ -13,34 +13,35 @@
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 
-#include "header/machdefs.h"
-#include "header/socket.h"
-#include "header/config.h"
-#include "header/eventloop.h"
-#include "header/msg_handler.h"
-#include "header/socket.h"
-#include "header/scheduler.h"
-#include "header/server.h"
-#include "header/util.h"
-#include "header/rtsp.h"
-#include "header/streamer.h"
-#include "header/session.h"
-#include "header/parse.h"
-#include "header/rtp.h"
+#include "header/ts.h"
 
 /******************************************
  *     received message handler functions
  ******************************************/
 
+
 int
 handle_setup_request(char *b)
 {
+    FILE *ts;
+	int len;
+    ts = fopen(FILE_NAME, "rb");
+    assert(ts != NULL);
+
+    while ((len = fread(buffer, TRANSPORT_PACKET_SIZE, 1, tsId)) >){
+#ifdef DEBUG
+            readTsHeader();
+#endif
+	} 
+
+    fclose(tsId);
 	return 1;
 }
 
 int
 handle_play_request(char *b)
 {
+	
     return 1;
 }
 
