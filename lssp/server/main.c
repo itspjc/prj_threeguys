@@ -56,3 +56,17 @@ main (int argc, char **argv)
         //}
     }
 }
+
+void
+init_server(int argc, char **argv)
+{
+    //int i = 0;
+    //schedule_init();
+    init_config(argc, argv); // config.c
+    printf("Control channel port set to %d.\n", get_config_port());
+    printf("BasePath set to \"%s\"\n", BasePath);
+
+    //for (; i < MAXSTREAMSESSIONS; i++) //최대 세션의 수를 초기화 해주는 것 같음
+      //s_state.sessionlist[i] = 0;
+}
+

@@ -15,6 +15,22 @@
 extern void terminate(int errorcode);
 
 /*WAVEFMTX PCM_hdr;*/
+char  *sInvld_method = "Invalid Method";
+
+/* message header keywords */
+const char  sContentLength[] = "Content-Length";
+const char  sAccept[] = "Accept";
+const char  sAllow[] = "Allow";
+const char  sBlocksize[] = "Blocksize";
+const char  sContentType[] = "Content-Type";
+const char  sDate[] = "Date";
+const char  sRequire[] = "Require";
+const char  sTransportRequire[] = "Transport-Require";
+const char  sSequenceNo[] = "SequenceNo";
+const char  sSeq[] = "Seq";
+const char  sStream[] = "Stream";
+const char  sSession[] = "Session";
+
 
 TKN Methods [] =
 {
@@ -32,6 +48,7 @@ TKN Methods [] =
     {EXT_METHOD_TKN, RTSP_EXTENSION_METHOD},
     {0, -1}
 };
+
 
 TKN Status [] =
 {
@@ -81,22 +98,6 @@ TKN Status [] =
     {"Extended Error:", 911},
     {0, -1}
 };
-
-char  *sInvld_method = "Invalid Method";
-
-/* message header keywords */
-const char  sContentLength[] = "Content-Length";
-const char  sAccept[] = "Accept";
-const char  sAllow[] = "Allow";
-const char  sBlocksize[] = "Blocksize";
-const char  sContentType[] = "Content-Type";
-const char  sDate[] = "Date";
-const char  sRequire[] = "Require";
-const char  sTransportRequire[] = "Transport-Require";
-const char  sSequenceNo[] = "SequenceNo";
-const char  sSeq[] = "Seq";
-const char  sStream[] = "Stream";
-const char  sSession[] = "Session";
 
 
 char *

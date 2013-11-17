@@ -23,15 +23,11 @@ u_short in_size;
 char    out_buffer[BUFFERSIZE];
 u_short out_size;
 
-void add_time_stamp( char * b, int crlf );
-void add_play_range( char *b, struct SESSION_STATE *state );
-void add_session_id( char *b, struct SESSION_STATE *state );
 void send_reply( int err, char *addon );
 void io_read(RTSP_SOCK fd);
 void io_write(RTSP_SOCK fd);
 int  io_write_pending();
-void bread(char *buffer, u_short len);
-void bwrite(char *buffer, u_short len);
+int validate_method( char *s );
 
 
 #endif /* _MSG_HANDLER_H_ */

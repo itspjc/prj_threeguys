@@ -94,7 +94,7 @@ eventloop()
     gettimeofday(&now, 0);
     inow = ((now.tv_sec - start.tv_sec) * 1000) + (now.tv_usec / 1000);
 
-    schedule_execute(inow);
+    //schedule_execute(inow);
 
     if (main_fd && FD_ISSET(main_fd_read, &readset))
     {

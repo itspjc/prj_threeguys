@@ -30,6 +30,25 @@ u_short in_size = 0;
 char    out_buffer[BUFFERSIZE];
 u_short out_size = 0;
 
+
+
+TKN Methods [] =
+{
+    {PLAY_TKN, RTSP_PLAY_METHOD},
+    {PAUSE_TKN, RTSP_PAUSE_METHOD},
+    {GET_TKN, RTSP_GET_METHOD},
+    {SETUP_TKN, RTSP_SETUP_METHOD},
+    {REDIRECT_TKN, RTSP_REDIRECT_METHOD},
+    {SESSION_TKN, RTSP_SESSION_METHOD},
+    {HELLO_TKN, RTSP_HELLO_METHOD},
+    {CLOSE_TKN, RTSP_CLOSE_METHOD},
+    {RECORD_TKN, RTSP_RECORD_METHOD},
+    {GET_PARAM_TKN, RTSP_GET_PARAM_METHOD},
+    {SET_PARAM_TKN, RTSP_SET_PARAM_METHOD},
+    {EXT_METHOD_TKN, RTSP_EXTENSION_METHOD},
+    {0, -1}
+};
+
 void
 msg_handler()
 {
@@ -40,7 +59,7 @@ msg_handler()
 
     /* in_buffer -> buffer */
 
-    u_short = llen;
+    u_short llen;
 
     // in_buffer 가 가득찰때까지 기다려야 하는 부분을 만들어야 함
 
@@ -65,9 +84,11 @@ io_write(RTSP_SOCK fd)
         printf( "PANIC: tcp_write() error.\n" );
         terminate(-1);
     }
-    else {
+    else 
+    {
         out_size = 0;
         printf("Write to Client socket successfully done.\n");
+    }
 }
 
 /* Fill in_buffer from network, used from eventloop only */
