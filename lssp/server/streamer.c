@@ -190,7 +190,7 @@ stream_event(struct STREAMER *s)
    else
    {  /* this was a last packet condition so send an RTP pkt saying so. */
       on = build_RTP_packet( RTP_pkt, buffer, 0, s );
-      dgram_sendto(s->output_fd, RTP_pkt, on, 0, (struct sockaddr *)&s->dest,
+      dgram_sendto(s->output_fd, RTP_pkt, on, 0, (struct sockaddr *)&s->dest,			/* socket에 쓰는 단계, dgram_sendto in socket.c */
                    sizeof(s->dest));
             
       if ( s_state.cur_state == PLAY_STATE )
