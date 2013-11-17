@@ -124,7 +124,7 @@ build_RTP_packet( void *RTP_pkt, char *data, int data_len, struct STREAMER *s )
    r->padding = 0;
    r->csrc_len = 0;
    r->marker = 0;
-   r->payload = PCM2RTP_payload_type(&s->stream->PCM_hdr);
+   r->payload = 33; /* payload type = 'MPEG-2', 차후 논의 필요 */
 
    r->seq_no = htons(RTSP_send_seq_num++);
    r->timestamp = htonl(RTSP_send_timestamp);
