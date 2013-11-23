@@ -75,7 +75,7 @@ stop_stream(struct STREAMER *s)
 void
 resume_stream(struct STREAMER *s)
 {
-    s->outstanding_event_id = 
+    s->outstanding_event_id =                        /* outstanding_event_id ?? */
       schedule_enter(inow + s->rate, s->session_id, (void *)stream_event, s);
     s->next_event_time = inow + s->rate * 2;
 }
