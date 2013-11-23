@@ -280,6 +280,6 @@ int
 dgram_sendto(int s, const void *msg, size_t len, int flags,
 	const struct sockaddr *to, int tolen)
 {
-     return sendto(s, msg, len, flags, to, tolen);
+     return sendto(s, msg, len, flags, to, tolen);//UDP Data 송수신 : s : 소켓의 FileFD, msg : 전송될 데이터를 가지고 있는 버퍼, len : 버퍼길이, flags : 함수의 호출이 어떤일을 할지 결정하는 flag, *to : 데이터가 전송될 원격 호스트의 주소, tolen : 주소정보 구조체의 길이
 }
 

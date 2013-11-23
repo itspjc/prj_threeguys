@@ -20,7 +20,7 @@ static struct SCHEDULE_LIST
 } schedule_list[MAXSCHEDULE];
 
 void
-schedule_init()
+schedule_init()    // scheduler 생성 
 {
     int i;
 
@@ -46,7 +46,7 @@ schedule_enter(u_long time, u_long session_id, void (*fn)(void*), void* arg)
 	}
     }
     return INVALID_SCHEDULE_ID;
-}
+}  // 처음으로 id가 -1인 애가 나오면 id를 할당하고 input argu.인 time, session id, stream_event, streamer을 대입(streamer.c 의 start_stream에서 사용함
 
 void
 schedule_remove(u_long id)
@@ -61,7 +61,7 @@ schedule_remove(u_long id)
             return;
 	}
     }
-}
+}// 해당 schedule id의 schedule을 remove
 
 void
 schedule_remove_session(u_long session_id)
@@ -73,7 +73,7 @@ schedule_remove_session(u_long session_id)
         if(schedule_list[i].session_id == session_id)
             schedule_list[i].id = INVALID_SCHEDULE_ID;
     }
-}
+}//해당 session id의 schedule을 remove
 
 void
 schedule_execute(u_long time)
@@ -87,7 +87,7 @@ schedule_execute(u_long time)
          (schedule_list[i].time <= time))
       {
          schedule_list[i].fn(schedule_list[i].arg);		// 여기서 RTP packet이 socket에 써짐 
-         schedule_list[i].id = INVALID_SCHEDULE_ID;
+         schedule_list[i].id = INVALID_SCHEDULE_ID; // 한번 실행한 뒤에는 Invalid로 수정
       }
    }
 }
