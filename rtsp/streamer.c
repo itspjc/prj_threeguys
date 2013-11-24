@@ -73,8 +73,8 @@ void buildRTPHeader(STREAMER* streamer, RTP_PKT* rtp_pkt){
    	rtp_pkt->header.marker = 0;
    	rtp_pkt->header.payload = RTP_PAYLOAD_MPEG2_TS;
 
-	rtp_pkt->header.seq_no = streamer->sequenceNo++;
-   	rtp_pkt->header.timestamp = (now.tv_sec - streamer->init_sec) * 1000 + (now.tv_usec / 1000);
+	rtp_pkt->header.seq_no = htons(streamer->sequenceNo++);
+   	rtp_pkt->header.timestamp = htonl((now.tv_sec - streamer->init_sec) * 1000 + (now.tv_usec / 1000));
    	rtp_pkt->header.ssrc = streamer->sessionID;
 }
 
