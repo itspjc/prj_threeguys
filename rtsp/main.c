@@ -98,8 +98,8 @@ int main(int argc, char **argv){
 
         // 경로를 받아서 지정
 
-
-		file = fopen(strcat(base_path, "sample.ts"), "rb");
+		file = fopen("media/sample.ts", "rb");
+//		file = fopen(strcat(base_path, "sample.ts"), "rb");
         printf("%s", base_path);		
         if(file == NULL){
 			printf("fopen error\n");

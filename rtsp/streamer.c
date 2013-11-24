@@ -75,47 +75,40 @@ void buildRTPHeader(STREAMER* streamer, RTP_PKT* rtp_pkt){
 
 	rtp_pkt->header.seq_no = htons(streamer->sequenceNo++);
    	rtp_pkt->header.timestamp = htonl((now.tv_sec - streamer->init_sec) * 1000 + (now.tv_usec / 1000));
-   	rtp_pkt->header.ssrc = htonl(streamer->sessionID);
+   	rtp_pkt->header.ssrc = streamer->sessionID;
 
 }
 
 void playStream(STREAMER* streamer){
-	int i, j, t;
+	int i, j, t, p = 0;
 	char buffer[255];
+	char rtppacket[sizeof(RTP_PKT)];
+	char *r = buffer;
 
 	for(t = 0; t < 10; t++)
     {
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
 		memset(buffer, 0, sizeof(buffer));
 		buildRTPHeader(streamer, &rtp_pkt);
-
+		p = 0;
 		for(i = 0; i < 12; i++){
-			printf("%x ", *(&(rtp_pkt.header)+i));
+			rtppacket[p++] = (char *)(&(rtp_pkt.header)+i);
 		}
-		printf("\n");
 
 		for(i = 0; i < 5; i++){
 			fread(buffer, TS_PACKET_SIZE, 1, streamer->input);
             for(j = 0; j < TS_PACKET_SIZE; j += 4){
-               	char d[4];
-				d[0] = buffer[j+3];
-				d[1] = buffer[j+2];
-				d[2] = buffer[j+1];
-				d[3] = buffer[j];
-				memcpy(&rtp_pkt.data[i][j], d, 4);
+				rtppacket[p++] = buffer[j+3];
+				rtppacket[p++] = buffer[j+2];
+				rtppacket[p++] = buffer[j+1];
+				rtppacket[p++] = buffer[j];
             }
 		}
 
-		printf("First byte : ");
-		for(i = 0; i < 5; i++){
-			printf("%x ", rtp_pkt.data[0][i]);
-		}
-		printf("\n");
-
 		if(streamer->transportMode)
-		    write(streamer->rtp_sock,&rtp_pkt,sizeof(RTP_PKT));
+		    write(streamer->rtp_sock,rtppacket,sizeof(RTP_PKT));
 		else
-			sendto(streamer->rtp_sock, &rtp_pkt, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendAddr), sizeof(streamer->sendAddr));
+			sendto(streamer->rtp_sock, rtppacket, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendAddr), sizeof(streamer->sendAddr));
 	}
 }
 
