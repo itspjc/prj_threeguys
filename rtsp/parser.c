@@ -11,15 +11,16 @@
 
 void handle_option()
 {
-    sprintf(response,
+    char res_option[1024];
+    sprintf(res_option,
 			"RTSP/1.0 200 OK\r\n"
 			"CSeq: %s\r\n"
 			"Public: DESCRIBE, SETUP, TEARDOWN, PLAY, PAUSE\r\n\r\n",cseq);
 
 	printf("-------------S -> C-------------\n"
-			"%s\n", response);
+			"%s\n", res_option);
 
-    write(rtsp_sock, response, strlen(response));   
+    write(rtsp_sock, res_option, strlen(res_option));   
 }
 
 void getDate(char *date){
@@ -48,7 +49,9 @@ void handle_describe()
         filename);
 
 	getDate(date);
-	sprintf(response,
+
+    char res_des[1024];
+	sprintf(res_des,
         "RTSP/1.0 200 OK\r\n"
 		"CSeq: %s\r\n"
         "Date: %s\r\n"
@@ -63,8 +66,8 @@ void handle_describe()
         SDPbuf);
 
 	printf("-------------S -> C-------------\n"
-			"%s\n", response);
-	write(rtsp_sock, response, strlen(response));
+			"%s\n", res_des);
+	write(rtsp_sock, res_des, strlen(response));
 }
 
 void handle_setup(){
@@ -87,7 +90,9 @@ void handle_setup(){
             clientRTCPPort,
             streamer->serverRTPPort,
             streamer->serverRTCPPort);
-    sprintf(response,
+
+    char res_set[1024];
+    sprintf(res_set,
         "RTSP/1.0 200 OK\r\n"
 		"CSeq: %s\r\n"
         "Date: %s\r\n"
@@ -102,14 +107,14 @@ void handle_setup(){
 	streamer->sessionID = rtspSessionID;
 	streamer->transportMode = transportMode;
 	printf("-------------S -> C-------------\n"
-		"%s\n", response);
-    write(rtsp_sock,response,strlen(response));
+		"%s\n", res_set);
+    write(rtsp_sock,res_set,strlen(res_set));
 }
 
 void handle_play(){
 	getDate(date);
-
-    sprintf(response,
+    char res_play[1024];
+    sprintf(res_play,
         "RTSP/1.0 200 OK\r\n"
 		"CSeq: %s\r\n"
         "Date: %s\r\n"
@@ -121,21 +126,22 @@ void handle_play(){
         rtspSessionID);
 
 	printf("-------------S -> C-------------\n"
-		"%s\n", response);
-    write(rtsp_sock,response,strlen(response));
+		"%s\n", res_play);
+    write(rtsp_sock,res_play,strlen(res_play));
 	
 	playStream(streamer);	
 }
 
 void handle_teardown(){
-    sprintf(response,
+    char res_tear[1024];
+    sprintf(res_tear,
         "RTSP/1.0 200 OK\r\n"
 		"CSeq: %s\r\n",
         cseq);
 
 	printf("-------------S -> C-------------\n"
-		"%s\n", response);
-    write(rtsp_sock,response,strlen(response));
+		"%s\n", res_tear);
+    write(rtsp_sock,res_tear,strlen(res_tear));
 
 	removeStreamer(streamer);
 	close(rtsp_sock);
@@ -143,8 +149,8 @@ void handle_teardown(){
 
 void handle_pause(){
 	getDate(date);
-
-    sprintf(response,
+    char res_pause[1024];
+    sprintf(res_pause,
         "RTSP/1.0 200 OK\r\n"
 		"CSeq: %s\r\n"
 		"Date: %s\r\n",
@@ -152,8 +158,8 @@ void handle_pause(){
 		date);
 
 	printf("-------------S -> C-------------\n"
-		"%s\n", response);
-    write(rtsp_sock,response,strlen(response));
+		"%s\n", res_pause);
+    write(rtsp_sock,res_pause,strlen(res_pause));
 
 	pauseStream(streamer);
 }
