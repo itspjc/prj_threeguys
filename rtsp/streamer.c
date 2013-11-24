@@ -76,6 +76,7 @@ void buildRTPHeader(STREAMER* streamer, RTP_PKT* rtp_pkt){
 	rtp_pkt->header.seq_no = htons(streamer->sequenceNo++);
    	rtp_pkt->header.timestamp = htonl((now.tv_sec - streamer->init_sec) * 1000 + (now.tv_usec / 1000));
    	rtp_pkt->header.ssrc = htonl(streamer->sessionID);
+
 }
 
 void playStream(STREAMER* streamer){
