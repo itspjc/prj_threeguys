@@ -61,7 +61,7 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
 	return streamer;
 }
 
-void buildRTPHeader(STREAMER* streamer, RTP_PKT* rtp_pkt){
+void buildRTPHeader(STREAMER* streamer, char* rtppacket, RTP_PKT* rtp_pkt){
     struct timeval now;
 	gettimeofday(&now, 0);
 
@@ -77,6 +77,7 @@ void buildRTPHeader(STREAMER* streamer, RTP_PKT* rtp_pkt){
    	rtp_pkt->header.timestamp = htonl((now.tv_sec - streamer->init_sec) * 1000 + (now.tv_usec / 1000));
    	rtp_pkt->header.ssrc = streamer->sessionID;
 
+	memcpy(rtppacket, (void *)rtp_pkt, 12);
 }
 
 void playStream(STREAMER* streamer){
@@ -89,12 +90,10 @@ void playStream(STREAMER* streamer){
     {
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
 		memset(buffer, 0, sizeof(buffer));
-		buildRTPHeader(streamer, &rtp_pkt);
-		p = 0;
-		for(i = 0; i < 12; i++){
-			rtppacket[p++] = (char *)(&(rtp_pkt.header)+i);
-		}
-
+		memset(rtppacket, 0, sizeof(rtppacket));
+		buildRTPHeader(streamer, rtppacket, &rtp_pkt);
+		
+		p = 12;
 		for(i = 0; i < 5; i++){
 			fread(buffer, TS_PACKET_SIZE, 1, streamer->input);
             for(j = 0; j < TS_PACKET_SIZE; j += 4){
@@ -104,6 +103,11 @@ void playStream(STREAMER* streamer){
 				rtppacket[p++] = buffer[j];
             }
 		}
+
+		for(i = 0; i < 16; i++){
+			printf("%x ", rtppacket[i] & 0xFF);
+		}
+		printf("\n");
 
 		if(streamer->transportMode)
 		    write(streamer->rtp_sock,rtppacket,sizeof(RTP_PKT));
