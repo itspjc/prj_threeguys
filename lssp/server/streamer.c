@@ -31,7 +31,7 @@ extern char *alloc_path_name ( char *base_path, char *file_path );
 
 
 struct STREAMER *
-start_stream(u_long session_id, STREAM *stream, u_short data_port)
+start_stream(u_long session_id, STREAM *stream, u_short data_port)     /* Streamer 개방 함수 */ /* stream이 인자로 들어옴. 어디서 들어오는지 check 해야*/
 {
    struct STREAMER *s = malloc(sizeof(struct STREAMER));
    char  *PathName;
@@ -40,10 +40,10 @@ start_stream(u_long session_id, STREAM *stream, u_short data_port)
    s->stream = stream;
    stream->streamer = (void *) s;   /* back reference to streamer */
    s->udp_port = data_port;
-   memcpy(&s->dest, &peer, sizeof(s->dest));
+   memcpy(&s->dest, &peer, sizeof(s->dest));          /* What is Peer ? */
    s->dest.sin_port = htons(data_port);
    PathName = alloc_path_name( BasePath, stream->filename );
-   s->input_fd = open(PathName, OPEN_FLAGS);
+   s->input_fd = open(PathName, OPEN_FLAGS);			/* open the movie file */ /* not fopen, open is provided by Linux*/
    free( PathName );
    if(s->input_fd < 0)	/* can't open file */
    {
@@ -52,16 +52,16 @@ start_stream(u_long session_id, STREAM *stream, u_short data_port)
    }
    stream->stream_fd = s->input_fd;
    s->input_offset = stream->start_offset;
-   lseek( s->input_fd, s->input_offset, SEEK_SET );
+   lseek( s->input_fd, s->input_offset, SEEK_SET );  /* input_offset 단위로 파일을 건너뜀(input_fd 값을 바꿔줌), Stream의 시작이므로 SEEK_SET(파일의 시작부터) */
 
-   s->output_fd = udp_open();
+   s->output_fd = udp_open();		/* input_fd는 streaming할 파일, output_fd는 udp_open()*/
    s->ssrc = 0;
-   s->seq = stream->seq_num;
+   s->seq = stream->seq_num;		
    s->pktsize = stream->max_pkt_size;
    s->rate = stream->xmit_interval;
 
-   schedule_enter(inow + s->rate, s->session_id, (void *)stream_event, s);
-   s->next_event_time = inow + s->rate * 2;
+   schedule_enter(inow + s->rate, s->session_id, (void *)stream_event, s);	/* schedule에 삽입하는 것으로 보임 */
+   s->next_event_time = inow + s->rate * 2;	/*이게 무슨 뜻일까? *//* inow = Internet Time Format(ms)*/
 
    return s;
 }
@@ -75,7 +75,7 @@ stop_stream(struct STREAMER *s)
 void
 resume_stream(struct STREAMER *s)
 {
-    s->outstanding_event_id = 
+    s->outstanding_event_id =                        /* outstanding_event_id ?? */
       schedule_enter(inow + s->rate, s->session_id, (void *)stream_event, s);
     s->next_event_time = inow + s->rate * 2;
 }
