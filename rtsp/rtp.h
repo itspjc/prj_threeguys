@@ -25,7 +25,7 @@ typedef struct RTPPacketHeader{
 
 typedef struct RTPPacket{
 	RTP_HDR header;
-	char data[5][TS_PACKET_SIZE];
+	char data[3][TS_PACKET_SIZE];
 } RTP_PKT;
 
 RTP_PKT rtp_pkt;

@@ -32,6 +32,11 @@ void getDate(char *date){
 
 void handle_describe()
 {    
+    char res_des[1024];
+	char SDPbuf[256];
+	char URLbuf[256];
+	char date[256];
+
 	sprintf(SDPbuf,
 		"v=0\r\n"
         "o=- %d 1 IN IP4 %s\r\n"           
@@ -50,7 +55,6 @@ void handle_describe()
 
 	getDate(date);
 
-    char res_des[1024];
 	sprintf(res_des,
         "RTSP/1.0 200 OK\r\n"
 		"CSeq: %s\r\n"
@@ -71,6 +75,9 @@ void handle_describe()
 }
 
 void handle_setup(){
+    char res_set[1024];
+    char transport[256];
+    char date[256];
 	rtspSessionID = rand();
 	getDate(date);
 
@@ -91,7 +98,6 @@ void handle_setup(){
             streamer->serverRTPPort,
             streamer->serverRTCPPort);
 
-    char res_set[1024];
     sprintf(res_set,
         "RTSP/1.0 200 OK\r\n"
 		"CSeq: %s\r\n"
@@ -112,8 +118,9 @@ void handle_setup(){
 }
 
 void handle_play(){
-	getDate(date);
     char res_play[1024];
+	char date[256];
+	getDate(date);
     sprintf(res_play,
         "RTSP/1.0 200 OK\r\n"
 		"CSeq: %s\r\n"
@@ -148,6 +155,7 @@ void handle_teardown(){
 }
 
 void handle_pause(){
+	char date[256];
 	getDate(date);
     char res_pause[1024];
     sprintf(res_pause,
@@ -167,8 +175,8 @@ void handle_pause(){
 void parse_rtsp(){
 	int str_len, cnt = 0;
 	char *p, *q;
-
-	while((str_len = read(rtsp_sock, cmd, BUF_SIZE)) != 0){
+	char cmd[BUF_SIZE] = {0, };
+	while((str_len = read(rtsp_sock, cmd, BUF_SIZE)) > 0){
 		printf("-------------C -> S-------------\n"
 			"%s\n", cmd);
 		
@@ -193,8 +201,8 @@ void parse_rtsp(){
 			p += 6;
 		}else{
 			printf("Command error\n");
-			close(rtsp_sock);
-			exit(-1);
+		//	close(rtsp_sock);
+		//	exit(-1);
 		}
 
 		if(strstr(p, "rtsp://") != NULL){
@@ -211,8 +219,8 @@ void parse_rtsp(){
 			filename[i] = 0;
 		}else{
 			printf("URL error\n");
-			close(rtsp_sock);
-			exit(-1);
+		//	close(rtsp_sock);
+		//	exit(-1);
 		}
 
 		p = strtok(NULL, "\r\n");
@@ -225,8 +233,8 @@ void parse_rtsp(){
 			cseq[i] = 0;
 		} else{
 			printf("CSeq error\n");
-			close(rtsp_sock);
-			exit(-1);
+		//	close(rtsp_sock);
+		//	exit(-1);
 		}
 
 		if (rtspCmdType == RTSP_SETUP)
@@ -256,12 +264,11 @@ void parse_rtsp(){
 				port[i] = 0;
 				clientRTCPPort = atoi(port);
 			}	
-    	}/*
+    	}
 		if(rtspCmdType == RTSP_PLAY){
 			while((str_len = read(streamer->rtcp_sock, cmd, BUF_SIZE)) > 0){
-			
 			}
-		}*/
+		}
 		switch(rtspCmdType){
 		case RTSP_OPTIONS : handle_option(); break;
 		case RTSP_DESCRIBE : handle_describe(); break;

@@ -29,14 +29,6 @@ char hostaddr[256];
 char filename[256];
 char cseq[256];
 
-char cmd[BUF_SIZE];
-char response[BUF_SIZE];
-//char * response;
-char SDPbuf[256];
-char URLbuf[256];
-char date[256];
-char transport[256];
-
 STREAMER* streamer;
 extern FILE* inputStream;
 

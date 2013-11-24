@@ -30,17 +30,14 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
 	recvAddr.sin_addr.s_addr = INADDR_ANY;   
 	int port;
 	int rtp_sock, rtcp_sock;
-    for (port = 6970; port < 65534 ; port += 2) {
+    for (port = 6970; port < 7000 ; port += 2) {
 		if(transportMode)
 		    rtp_sock = socket(AF_INET, SOCK_STREAM, 0);                     
 		else
 		    rtp_sock = socket(AF_INET, SOCK_DGRAM, 0);                     
     	recvAddr.sin_port = htons(port);
   	    if (bind(rtp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0) {
-			if(transportMode)
-				rtp_sock = socket(AF_INET, SOCK_STREAM, 0);
-			else
-	    		rtcp_sock = socket(AF_INET, SOCK_DGRAM, 0);
+			rtcp_sock = socket(AF_INET, SOCK_STREAM, 0);
     		recvAddr.sin_port = htons(port + 1);
 			if (bind(rtcp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0) {
 				streamer->rtp_sock = rtp_sock;
@@ -86,15 +83,13 @@ void playStream(STREAMER* streamer){
 	char rtppacket[sizeof(RTP_PKT)];
 	char *r = buffer;
 
-	for(t = 0; t < 10; t++)
-    {
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
 		memset(buffer, 0, sizeof(buffer));
 		memset(rtppacket, 0, sizeof(rtppacket));
 		buildRTPHeader(streamer, rtppacket, &rtp_pkt);
 		
 		p = 12;
-		for(i = 0; i < 5; i++){
+		for(i = 0; i < 3; i++){
 			fread(buffer, TS_PACKET_SIZE, 1, streamer->input);
             for(j = 0; j < TS_PACKET_SIZE; j += 4){
 				rtppacket[p++] = buffer[j+3];
@@ -109,11 +104,13 @@ void playStream(STREAMER* streamer){
 		}
 		printf("\n");
 
-		if(streamer->transportMode)
-		    write(streamer->rtp_sock,rtppacket,sizeof(RTP_PKT));
-		else
-			sendto(streamer->rtp_sock, rtppacket, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendAddr), sizeof(streamer->sendAddr));
-	}
+		if(streamer->transportMode){
+		    int errorno = write(streamer->rtp_sock,rtppacket,sizeof(RTP_PKT));
+			printf("tcp called : %d error no : %d\n", t, errorno);
+		}else{
+			int errorno = sendto(streamer->rtp_sock, rtppacket, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendAddr), sizeof(streamer->sendAddr));
+			printf("udp called : %d error no : %d\n", t, errorno);
+		}
 }
 
 void pauseStream(STREAMER *streamer){
