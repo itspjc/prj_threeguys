@@ -31,10 +31,11 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
 	int port;
 	int rtp_sock, rtcp_sock;
     for (port = 6970; port < 7000 ; port += 2) {
-		if(transportMode)
-		    rtp_sock = socket(AF_INET, SOCK_STREAM, 0);                     
-		else
+		if(transportMode){
+		    rtp_sock = socket(AF_INET, SOCK_STREAM, 0);
+		}else{
 		    rtp_sock = socket(AF_INET, SOCK_DGRAM, 0);                     
+		}
     	recvAddr.sin_port = htons(port);
   	    if (bind(rtp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0) {
 			rtcp_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -82,7 +83,7 @@ void playStream(STREAMER* streamer){
 	char buffer[255];
 	char rtppacket[sizeof(RTP_PKT)];
 	char *r = buffer;
-
+	for(t = 0; t < 5; t++){
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
 		memset(buffer, 0, sizeof(buffer));
 		memset(rtppacket, 0, sizeof(rtppacket));
@@ -90,11 +91,9 @@ void playStream(STREAMER* streamer){
 		
 		p = 12;
 		for(i = 0; i < 3; i++){
+			memset(buffer, 0, sizeof(buffer));
 			fread(buffer, TS_PACKET_SIZE, 1, streamer->input);
-            for(j = 0; j < TS_PACKET_SIZE; j += 4){
-				rtppacket[p++] = buffer[j+3];
-				rtppacket[p++] = buffer[j+2];
-				rtppacket[p++] = buffer[j+1];
+            for(j = 0; j < TS_PACKET_SIZE; j++){
 				rtppacket[p++] = buffer[j];
             }
 		}
@@ -106,11 +105,12 @@ void playStream(STREAMER* streamer){
 
 		if(streamer->transportMode){
 		    int errorno = write(streamer->rtp_sock,rtppacket,sizeof(RTP_PKT));
-			printf("tcp called : %d error no : %d\n", t, errorno);
+			printf("tcp called error no : %d\n", errorno);
 		}else{
 			int errorno = sendto(streamer->rtp_sock, rtppacket, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendAddr), sizeof(streamer->sendAddr));
-			printf("udp called : %d error no : %d\n", t, errorno);
+			printf("udp called error no : %d\n", errorno);
 		}
+	}
 }
 
 void pauseStream(STREAMER *streamer){
