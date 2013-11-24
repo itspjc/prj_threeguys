@@ -256,12 +256,12 @@ void parse_rtsp(){
 				port[i] = 0;
 				clientRTCPPort = atoi(port);
 			}	
-    	}
+    	}/*
 		if(rtspCmdType == RTSP_PLAY){
 			while((str_len = read(streamer->rtcp_sock, cmd, BUF_SIZE)) > 0){
 			
 			}
-		}
+		}*/
 		switch(rtspCmdType){
 		case RTSP_OPTIONS : handle_option(); break;
 		case RTSP_DESCRIBE : handle_describe(); break;
