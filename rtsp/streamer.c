@@ -73,29 +73,28 @@ void buildRTPHeader(STREAMER* streamer, RTP_PKT* rtp_pkt){
    	rtp_pkt->header.marker = 0;
    	rtp_pkt->header.payload = RTP_PAYLOAD_MPEG2_TS;
 
-	rtp_pkt->header.seq_no = streamer->sequenceNo++;
-   	rtp_pkt->header.timestamp = (now.tv_sec - streamer->init_sec) * 1000 + (now.tv_usec / 1000);
-   	rtp_pkt->header.ssrc = streamer->sessionID;
+	rtp_pkt->header.seq_no = htons(streamer->sequenceNo++);
+   	rtp_pkt->header.timestamp = htonl((now.tv_sec - streamer->init_sec) * 1000 + (now.tv_usec / 1000));
+   	rtp_pkt->header.ssrc = htonl(streamer->sessionID);
 }
 
 void playStream(STREAMER* streamer){
 	int i, j, t;
 	char buffer[255];
+    char buffer2[255];
 
-	for(t = 0; t < 10; t++){
+	while (1) 
+    {
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
 		memset(buffer, 0, sizeof(buffer));
 		buildRTPHeader(streamer, &rtp_pkt);
 
 		for(i = 0; i < 5; i++){
 			fread(buffer, TS_PACKET_SIZE, 1, streamer->input);
-			memcpy(rtp_pkt.data[i], buffer, TS_PACKET_SIZE);
-		}
-
-		for(i = 0; i < 5; i++){
-			if(rtp_pkt.data[i][0] != 0x47){
-				printf("Something's wrong\n");
-			}
+            for(j = 0; j < TS_PACKET_SIZE; j += 4){
+                memcpy(buffer2[j], htonl(buffer[j]), 4);
+            }
+			memcpy(rtp_pkt.data[i], buffer2, TS_PACKET_SIZE);
 		}
 
 		if(streamer->transportMode)

@@ -52,6 +52,7 @@ msg_handler()
         memcpy (buffer, in_buffer, llen); // 먼저 buffer 에 복사
         opcode = validate_method(buffer); //parse.c:371 읽은 RTSP를 분석한다. 
         //handle_event(opcode, status, buffer); //server.c:915
+        llen = strcspn (in_buffer, "\r\n");
     }
 }
 

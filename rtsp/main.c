@@ -41,7 +41,7 @@ int main(int argc, char **argv){
 		clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_adr, &adr_sz);
 		rtsp_sock = clnt_sock;
 
-		file = fopen("muhan.ts", "rb");
+		file = fopen("sample.ts", "rb");
 		if(file == NULL){
 			printf("fopen error\n");
 			return;
