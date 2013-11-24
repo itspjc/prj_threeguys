@@ -18,15 +18,15 @@ int main(void)
     len = fread(buf, 188, 1, file);
         for(i = 0; i < 188; i +=4){
                 char d[4], e[4];
-                d[0] = buf[i]&0xFF;
-                d[1] = buf[i+1]&0xFF;
-                d[2] = buf[i+2]&0xFF;
-                d[3] = buf[i+3]&0xFF;
-                uint32_t l = htonl((uint32_t)d);
-                e[0] = (l & 0xFF000000) >> 24;
-                e[1] = ((l & 0xFF0000) >> 16) & 0xFF;
-                e[2] = ((l & 0xFF00) >> 8) & 0xFF;
-                e[3] = (l & 0xFF);
+                d[0] = buf[i];
+                d[1] = buf[i+1];
+                d[2] = buf[i+2];
+                d[3] = buf[i+3];
+
+				e[0] = d[3];
+				e[1] = d[2];
+				e[2] = d[1];
+				e[3] = d[0];
                 memcpy(&buf2[i], e, 4);
            }
     for(i =0; i < 16; i++){

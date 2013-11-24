@@ -82,21 +82,35 @@ void buildRTPHeader(STREAMER* streamer, RTP_PKT* rtp_pkt){
 void playStream(STREAMER* streamer){
 	int i, j, t;
 	char buffer[255];
-    char buffer2[255];
 
-	while (1) 
+	for(t = 0; t < 10; t++)
     {
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
 		memset(buffer, 0, sizeof(buffer));
 		buildRTPHeader(streamer, &rtp_pkt);
 
+		for(i = 0; i < 12; i++){
+			printf("%x ", *(&(rtp_pkt.header)+i));
+		}
+		printf("\n");
+
 		for(i = 0; i < 5; i++){
 			fread(buffer, TS_PACKET_SIZE, 1, streamer->input);
             for(j = 0; j < TS_PACKET_SIZE; j += 4){
-                memcpy(buffer2[j], htonl(buffer[j]), 4);
+               	char d[4];
+				d[0] = buffer[j+3];
+				d[1] = buffer[j+2];
+				d[2] = buffer[j+1];
+				d[3] = buffer[j];
+				memcpy(&rtp_pkt.data[i][j], d, 4);
             }
-			memcpy(rtp_pkt.data[i], buffer2, TS_PACKET_SIZE);
 		}
+
+		printf("First byte : ");
+		for(i = 0; i < 5; i++){
+			printf("%x ", rtp_pkt.data[0][i]);
+		}
+		printf("\n");
 
 		if(streamer->transportMode)
 		    write(streamer->rtp_sock,&rtp_pkt,sizeof(RTP_PKT));

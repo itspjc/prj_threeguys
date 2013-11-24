@@ -7,16 +7,16 @@
 #define TS_PACKET_SIZE			188
 
 typedef struct RTPPacketHeader{	
-  	/* byte 0 */
-	uint8_t csrc_len:4;
-  	uint8_t extension:1;
-  	uint8_t padding:1;
-  	uint8_t version:2;
+  	/* bytes 2, 3 */
+  	uint16_t seq_no;
   	/* byte 1 */
   	uint8_t marker:1;
   	uint8_t payload:7;
-  	/* bytes 2, 3 */
-  	uint16_t seq_no;
+  	/* byte 0 */
+  	uint8_t version:2;
+  	uint8_t padding:1;
+  	uint8_t extension:1;
+	uint8_t csrc_len:4;
   	/* bytes 4-7 */
   	uint32_t timestamp;
   	/* bytes 8-11 */

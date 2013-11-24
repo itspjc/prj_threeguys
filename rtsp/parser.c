@@ -161,7 +161,7 @@ void handle_pause(){
 void parse_rtsp(){
 	int str_len, cnt = 0;
 	char *p, *q;
- 
+
 	while((str_len = read(rtsp_sock, cmd, BUF_SIZE)) != 0){
 		printf("-------------C -> S-------------\n"
 			"%s\n", cmd);
@@ -251,14 +251,18 @@ void parse_rtsp(){
 				clientRTCPPort = atoi(port);
 			}	
     	}
-
+		if(rtspCmdType == RTSP_PLAY){
+			while((str_len = read(streamer->rtcp_sock, cmd, BUF_SIZE)) > 0){
+			
+			}
+		}
 		switch(rtspCmdType){
-			case RTSP_OPTIONS : handle_option(); break;
-			case RTSP_DESCRIBE : handle_describe(); break;
-			case RTSP_SETUP : handle_setup(); break;
-			case RTSP_PLAY : handle_play(); break;
-			case RTSP_TEARDOWN : handle_teardown(); break;
-			case RTSP_PAUSE : handle_pause(); break;
+		case RTSP_OPTIONS : handle_option(); break;
+		case RTSP_DESCRIBE : handle_describe(); break;
+		case RTSP_SETUP : handle_setup(); break;
+		case RTSP_PLAY : handle_play(); break;
+		case RTSP_TEARDOWN : handle_teardown(); break;
+		case RTSP_PAUSE : handle_pause(); break;
 		}
 	}
 }
