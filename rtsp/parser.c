@@ -67,7 +67,7 @@ void handle_describe()
 
 	printf("-------------S -> C-------------\n"
 			"%s\n", res_des);
-	write(rtsp_sock, res_des, strlen(response));
+	write(rtsp_sock, res_des, strlen(res_des));
 }
 
 void handle_setup(){
