@@ -112,6 +112,7 @@ int main(int argc, char **argv)
         
         if(file == NULL)
         {
+
 			printf("fopen error\n");
 			return;
 		}

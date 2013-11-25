@@ -179,7 +179,7 @@ void parse_rtsp(){
 	int str_len, cnt = 0;
 	char *p, *q;
 	char cmd[BUF_SIZE] = {0, };
-	while((str_len = read(rtsp_sock, cmd, BUF_SIZE)) > 0){
+	if((str_len = read(rtsp_sock, cmd, BUF_SIZE)) > 0){
 		printf("-------------C -> S-------------\n"
 			"%s\n", cmd);
 		
@@ -267,18 +267,19 @@ void parse_rtsp(){
 				port[i] = 0;
 				clientRTCPPort = atoi(port);
 			}	
-    	}
-		if(rtspCmdType == RTSP_PLAY){
-			while((str_len = read(streamer->rtcp_sock, cmd, BUF_SIZE)) > 0){
-			}
 		}
-		switch(rtspCmdType){
-		case RTSP_OPTIONS : handle_option(); break;
-		case RTSP_DESCRIBE : handle_describe(); break;
-		case RTSP_SETUP : handle_setup(); break;
-		case RTSP_PLAY : handle_play(); break;
-		case RTSP_TEARDOWN : handle_teardown(); break;
-		case RTSP_PAUSE : handle_pause(); break;
-		}
+	}
+	
+	if(streamer != NULL && streamer->rtcp_sock != 0){
+		while((str_len = read(streamer->rtcp_sock, cmd, BUF_SIZE)) > 0);
+	}
+
+	switch(rtspCmdType){
+		case RTSP_OPTIONS : printf("option\n"); handle_option(); break;
+		case RTSP_DESCRIBE : printf("describe\n"); handle_describe(); break;
+		case RTSP_SETUP : printf("setup\n"); handle_setup(); break;
+		case RTSP_PLAY : printf("play\n"); handle_play(); break;
+		case RTSP_TEARDOWN : printf("teardown\n"); handle_teardown(); break;
+		default : printf("Not implemented\n"); return;
 	}
 }
