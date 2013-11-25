@@ -28,29 +28,49 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
 
 	recvAddr.sin_family      = AF_INET;   
 	recvAddr.sin_addr.s_addr = INADDR_ANY;   
-	int port;
+	
+    int port;
 	int rtp_sock, rtcp_sock;
-    for (port = 6970; port < 7000 ; port += 2) {
-		if(transportMode)
+    
+    for (port = 6970; port < 7000 ; port += 2)
+    {
+		if(!transportMode)
+        {
 		    rtp_sock = socket(AF_INET, SOCK_STREAM, 0);                     
-		else
-		    rtp_sock = socket(AF_INET, SOCK_DGRAM, 0);                     
-    	recvAddr.sin_port = htons(port);
-  	    if (bind(rtp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0) {
+		}
+        else
+		{   
+            rtp_sock = socket(AF_INET, SOCK_DGRAM, 0);                     
+    	}
+        
+        recvAddr.sin_port = htons(port);
+  	    
+        
+        if (bind(rtp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0)
+        {
 			rtcp_sock = socket(AF_INET, SOCK_STREAM, 0);
     		recvAddr.sin_port = htons(port + 1);
-			if (bind(rtcp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0) {
+
+			if (bind(rtcp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0)
+            {
+                printf("%d \n", streamer->rtp_sock);
 				streamer->rtp_sock = rtp_sock;
 				streamer->rtcp_sock = rtcp_sock;
 				streamer->serverRTPPort = port;
 				streamer->serverRTCPPort = port+1;
 				break; 
-     	  	} else {
+     	  	}
+            else 
+            {
+                printf("All Failed? \n");
 				close(rtp_sock);
 				close(rtcp_sock);
 			}
-		} else 
+		}
+        else
+        {
 			close(rtp_sock);
+        }
 	}
 
 	streamer->sequenceNo = 1;
@@ -102,12 +122,17 @@ void playStream(STREAMER* streamer){
 		for(i = 0; i < 16; i++){
 			printf("%x ", rtppacket[i] & 0xFF);
 		}
-		printf("\n");
+		printf("Just Before Send ! (PLAY) \n");
 
-		if(streamer->transportMode){
+		if(!streamer->transportMode)
+        {
+            printf("first\n");
 		    int errorno = write(streamer->rtp_sock,rtppacket,sizeof(RTP_PKT));
 			printf("tcp called : %d error no : %d\n", t, errorno);
-		}else{
+		}
+        else
+        {
+            printf("second\n");
 			int errorno = sendto(streamer->rtp_sock, rtppacket, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendAddr), sizeof(streamer->sendAddr));
 			printf("udp called : %d error no : %d\n", t, errorno);
 		}

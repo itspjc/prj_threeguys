@@ -23,7 +23,8 @@ void handle_option()
     write(rtsp_sock, res_option, strlen(res_option));   
 }
 
-void getDate(char *date){
+void getDate(char *date)
+{
 	char buf[256];
     time_t t = time(NULL);
     strftime(buf, sizeof(buf), "%a %b %d %Y %H:%M:%S GMT", gmtime(&t));
@@ -74,7 +75,8 @@ void handle_describe()
 	write(rtsp_sock, res_des, strlen(res_des));
 }
 
-void handle_setup(){
+void handle_setup()
+{
     char res_set[1024];
     char transport[256];
     char date[256];
@@ -86,9 +88,10 @@ void handle_setup(){
 	if(!clientRTCPPort)
 		clientRTCPPort = RTCP_CLT_PORT_NO;
 
+    // Call initStreamer
 	streamer = initStreamer(rtsp_sock, clientRTPPort, clientRTCPPort, transportMode);
 
-    if (transportMode)
+    if (!transportMode)
         sprintf(transport,"RTP/AVP/TCP;unicast;interleaved=0-1");
     else
         sprintf(transport,
@@ -127,7 +130,7 @@ void handle_play(){
         "Date: %s\r\n"
         "Range: npt=0.000-\r\n"
         "Session: %i\r\n"
-        "RTP-Info: url=rtsp://192.168.0.6:3005/muhan.avi\r\n\r\n",
+        "RTP-Info: url=rtsp://192.168.56.102:3005\r\n\r\n",
         cseq,
         date,
         rtspSessionID);
