@@ -73,23 +73,27 @@ void buildRTPHeader(STREAMER* streamer, char* rtppacket, RTP_PKT* rtp_pkt){
 
 	rtp_pkt->header.seq_no = htons(streamer->sequenceNo++);
    	rtp_pkt->header.timestamp = htonl((now.tv_sec - streamer->init_sec) * 1000 + (now.tv_usec / 1000));
-   	rtp_pkt->header.ssrc = streamer->sessionID;
+   	rtp_pkt->header.ssrc = htonl(streamer->sessionID);
 
-	memcpy(rtppacket, (void *)rtp_pkt, 12);
+	memcpy(rtppacket+4, (void *)rtp_pkt, 12);
 }
 
 void playStream(STREAMER* streamer){
 	int i, j, t, p = 0;
 	char buffer[255];
-	char rtppacket[sizeof(RTP_PKT)];
-	char *r = buffer;
+	char rtppacket[sizeof(RTP_PKT) + 4];
+
 	for(t = 0; t < 5; t++){
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
 		memset(buffer, 0, sizeof(buffer));
 		memset(rtppacket, 0, sizeof(rtppacket));
+		rtppacket[0] = '$';
+		rtppacket[1] = 0;
+		rtppacket[2] = (sizeof(rtppacket) & 0x0000FF00) >> 8;
+		rtppacket[3] = (sizeof(rtppacket) & 0x000000FF);
 		buildRTPHeader(streamer, rtppacket, &rtp_pkt);
 		
-		p = 12;
+		p = 16;
 		for(i = 0; i < 3; i++){
 			memset(buffer, 0, sizeof(buffer));
 			fread(buffer, TS_PACKET_SIZE, 1, streamer->input);
@@ -98,16 +102,30 @@ void playStream(STREAMER* streamer){
             }
 		}
 
-		for(i = 0; i < 16; i++){
-			printf("%x ", rtppacket[i] & 0xFF);
+		for(i = 0; i < TS_PACKET_SIZE; i++){
+			printf("%2x\t", rtppacket[i+16] & 0xFF);
+			if((i+1)%16 == 0)
+				printf("\n");
+		}
+		printf("\n");
+		for(i = 0; i < TS_PACKET_SIZE; i++){
+			printf("%2x\t", rtppacket[i+16+TS_PACKET_SIZE] & 0xFF);
+			if((i+1)%16 == 0)
+				printf("\n");
+		}
+		printf("\n");
+		for(i = 0; i < TS_PACKET_SIZE; i++){
+			printf("%2x\t", rtppacket[i+16+2*TS_PACKET_SIZE] & 0xFF);
+			if((i+1)%16 == 0)
+				printf("\n");
 		}
 		printf("\n");
 
 		if(streamer->transportMode){
-		    int errorno = write(streamer->rtp_sock,rtppacket,sizeof(RTP_PKT));
+		    int errorno = write(streamer->rtp_sock,rtppacket,sizeof(rtppacket));
 			printf("tcp called error no : %d\n", errorno);
 		}else{
-			int errorno = sendto(streamer->rtp_sock, rtppacket, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendAddr), sizeof(streamer->sendAddr));
+			int errorno = sendto(streamer->rtp_sock, rtppacket+4, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendAddr), sizeof(streamer->sendAddr));
 			printf("udp called error no : %d\n", errorno);
 		}
 	}

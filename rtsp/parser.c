@@ -78,7 +78,7 @@ void handle_setup(){
     char res_set[1024];
     char transport[256];
     char date[256];
-	rtspSessionID = rand();
+	rtspSessionID = time(NULL);
 	getDate(date);
 
 	if(!clientRTPPort)
