@@ -3,13 +3,14 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-
+#include <signal.h>
 #include "parser.h"
 #include "eventloop.h"
 
 void error_handling(char *message);
 
-int main(int argc, char **argv){
+int main(int argc, char **argv)
+{
 	int serv_sock, clnt_sock;
 	struct sockaddr_in serv_adr, clnt_adr;
 	socklen_t optlen, adr_sz;
@@ -21,15 +22,12 @@ int main(int argc, char **argv){
 
     static u_short port = 3005;
     char base_path [256] = "";
-    /* 정상적으로 서버 시작 */
-    
-
-
-
 
     printf("==============================");
     printf("ThreeGuys RTSP Server Start \n");
     
+    /* Configuration File : media file directory & port */
+
     FILE * f;
     char *default_path;
     default_path = "config.cfg";
@@ -67,15 +65,17 @@ int main(int argc, char **argv){
         }
 
     }
+
+    /* Configuration End */
                 
     printf("RTSP port : %d. \n", port);
     printf("Default Media Path : %s. \n", base_path);
     printf("==============================");
 
+    /* Server Socket Configuration */
+
     
-
-
-    serv_sock = socket(PF_INET, SOCK_STREAM, 0);
+    serv_sock = socket(AF_INET, SOCK_STREAM, 0); // PF_INET
 	memset(&serv_adr,0,sizeof(serv_adr));
 	serv_adr.sin_family = AF_INET;
 	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -83,48 +83,75 @@ int main(int argc, char **argv){
 
 	optlen = sizeof(option);
 	option = 1;
-	setsockopt(serv_sock, SOL_SOCKET, SO_REUSEADDR, (void*)&option, optlen);
+	setsockopt(serv_sock, SOL_SOCKET, MSG_NOSIGNAL, (void*)&option, optlen);
 
+    signal(SIGPIPE, SIG_IGN); 
 	if(bind(serv_sock, (struct sockaddr*) &serv_adr, sizeof(serv_adr)) == -1)
-		error_handling("bind() error");
-	if(listen(serv_sock, 5) == -1)
+	{
+        error_handling("bind() error");
+    }
+	
+    if(listen(serv_sock, 5) == -1)
+    {
 		error_handling("listen() erorr");
+    }
+	
+    /* Listening By Server Socket */
 
-	while(1) {
-
+    while(1)
+    {
 	    adr_sz = sizeof(clnt_adr);
-		clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_adr, &adr_sz);
-		rtsp_sock = clnt_sock;
-
-        // 경로를 받아서 지정
+		clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_adr, &adr_sz); //Accept
+		
+        rtsp_sock = clnt_sock;
 
 		file = fopen("media/sample.ts", "rb");
-//		file = fopen(strcat(base_path, "sample.ts"), "rb");
-//      printf("%s\n", base_path);		
-        if(file == NULL){
+		//file = fopen(strcat(base_path, "sample.ts"), "rb");
+        
+        printf("%s", base_path);		
+        
+        if(file == NULL)
+        {
+
 			printf("fopen error\n");
 			return;
 		}
-		if(clnt_sock == -1)
-			continue;
-		else
+
+		if(clnt_sock == -1) // Listen again
+		{
+            continue;
+        }
+        else // New request from other client
+        {
 			puts("new client connected ...");
-		pid = fork();
-		if(pid == -1){
+		}
+        
+        /*
+        pid = fork();
+		if(pid == -1)
+        {
 			close(clnt_sock);
 			continue;
 		}
-		if(pid == 0){
+		if(pid == 0)
+        {
 			close(serv_sock);
 			rtsp_sock = clnt_sock;
 			
 			while(1)
-				eventloop(file);
-
+			{	
+                eventloop(file);
+            }
 			close(clnt_sock);
 		}
 		else
+        {
 			close(clnt_sock);
+        }*/
+        rtsp_sock = clnt_sock;
+        while(1)
+            eventloop(file);
+        close(clnt_sock);
 	}
 	close(serv_sock);
 	return 0;

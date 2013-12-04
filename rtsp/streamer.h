@@ -8,7 +8,8 @@
 
 typedef struct streamer
 {
-	struct sockaddr_in sendAddr;
+	struct sockaddr_in sendRtpAddr;
+	struct sockaddr_in sendRtcpAddr;
 
 	int rtp_sock;
 	int rtcp_sock;
