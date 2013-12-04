@@ -115,7 +115,7 @@ void playStream(STREAMER* streamer){
 	char buffer[255];
 	char rtppacket[sizeof(RTP_PKT) + 4];
 
-	for(t = 0; t < 7; t++){
+	while(1){
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
 		memset(buffer, 0, sizeof(buffer));
 		memset(rtppacket, 0, sizeof(rtppacket));
