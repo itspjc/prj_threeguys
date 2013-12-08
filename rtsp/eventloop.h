@@ -3,6 +3,6 @@
 
 extern int rtsp_sock;
 
-void eventloop(FILE* file);
+void eventloop();
 
 #endif

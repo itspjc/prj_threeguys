@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 	struct sockaddr_in serv_adr, clnt_adr;
 	socklen_t optlen, adr_sz;
 	pid_t pid;
-	FILE *file;
+	//FILE *file;
 
 	int option, str_len;
 	char buf[BUF_SIZE];
@@ -105,9 +105,9 @@ int main(int argc, char **argv)
 		
         rtsp_sock = clnt_sock;
 
-		file = fopen("media/sample.ts", "rb");
+		//file = fopen("media/NC.A.ts", "rb");
 		//file = fopen(strcat(base_path, "sample.ts"), "rb");
-        
+       /* 
         printf("%s", base_path);		
         
         if(file == NULL)
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 			printf("fopen error\n");
 			return;
 		}
-
+*/
 		if(clnt_sock == -1) // Listen again
 		{
             continue;
@@ -126,8 +126,8 @@ int main(int argc, char **argv)
 			puts("new client connected ...");
 		}
         
-        /*
-        pid = fork();
+        
+        pid = fork(); // 멀티 프로세스 가능하게 함
 		if(pid == -1)
         {
 			close(clnt_sock);
@@ -139,19 +139,16 @@ int main(int argc, char **argv)
 			rtsp_sock = clnt_sock;
 			
 			while(1)
-			{	
-                eventloop(file);
+			{
+                //file = fopen("media/NC.A.ts", "rb");
+                eventloop();
             }
 			close(clnt_sock);
 		}
 		else
         {
 			close(clnt_sock);
-        }*/
-        rtsp_sock = clnt_sock;
-        while(1)
-            eventloop(file);
-        close(clnt_sock);
+        }
 	}
 	close(serv_sock);
 	return 0;

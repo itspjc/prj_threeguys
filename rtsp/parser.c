@@ -208,7 +208,9 @@ void parse_rtsp(){
 		//	exit(-1);
 		}
 
-		if(strstr(p, "rtsp://") != NULL){
+		if(strstr(p, "rtsp://") != NULL && rtspCmdType == RTSP_OPTIONS)
+        {
+            printf("Here?");
 			p += 7;
 			int i = 0;
 			while(*p != '/')
@@ -220,7 +222,24 @@ void parse_rtsp(){
 			while(*p != ' ')
 				filename[i++] = *(p++);
 			filename[i] = 0;
-		}else{
+
+            if(filename[0] == 0)
+            {
+                file = fopen("media/sample.ts", "rb");
+                inputStream = file;
+            }
+            else
+            {
+                char *file_path;
+                printf("%s", filename);
+                file_path = strcat("media/", filename);
+                printf("%s", file_path);
+                file = fopen(file_path, "rb");
+                inputStream = file;
+            }
+		}
+        else
+        {
 			printf("URL error\n");
 		//	close(rtsp_sock);
 		//	exit(-1);
@@ -269,8 +288,9 @@ void parse_rtsp(){
 			}	
 		}
 	}
-	
-	if(streamer != NULL && streamer->rtcp_sock != 0){
+    printf(".....adsf");	
+	if(streamer != NULL && streamer->rtcp_sock != 0)
+    {
 		while((str_len = read(streamer->rtcp_sock, cmd, BUF_SIZE)) > 0);
 	}
 

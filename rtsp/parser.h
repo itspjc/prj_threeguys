@@ -31,7 +31,7 @@ char cseq[256];
 
 STREAMER* streamer;
 extern FILE* inputStream;
-
+extern FILE* file;
 void parse_rtsp();
 
 #endif
