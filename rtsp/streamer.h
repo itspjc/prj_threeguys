@@ -13,6 +13,8 @@ typedef struct streamer
 
 	int rtp_sock;
 	int rtcp_sock;
+	
+	int playpid;
 
 	FILE* input;
 
