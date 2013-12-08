@@ -196,7 +196,7 @@ void parse_rtsp(){
 			"%s\n", cmd);
 	
 		printf("my PID = %d\n", getpid());
-	
+
 		p = strtok(cmd, "\r\n");
 		if (strstr(p,"OPTIONS") != NULL){
 			rtspCmdType = RTSP_OPTIONS;
@@ -221,10 +221,9 @@ void parse_rtsp(){
 		//	close(rtsp_sock);
 		//	exit(-1);
 		}
-
+/*
 		if(strstr(p, "rtsp://") != NULL && rtspCmdType == RTSP_OPTIONS)
         {
-            printf("Here?");
 			p += 7;
 			int i = 0;
 			while(*p != '/')
@@ -236,29 +235,40 @@ void parse_rtsp(){
 			while(*p != ' ')
 				filename[i++] = *(p++);
 			filename[i] = 0;
-
-            if(filename[0] == 0)
-            {
-                file = fopen("media/sample.ts", "rb");
-                inputStream = file;
-            }
-            else
-            {
-                char *file_path;
-                printf("%s", filename);
-                file_path = strcat("media/", filename);
-                printf("%s", file_path);
-                file = fopen(file_path, "rb");
-                inputStream = file;
-            }
 		}
         else
         {
 			printf("URL error\n");
-		//	close(rtsp_sock);
-		//	exit(-1);
+			close(rtsp_sock);
+			exit(-1);
 		}
+*/
+        if(rtspCmdType == RTSP_OPTIONS)
+        {
+        char directive[32];
+        char host[256];
+        char version[32];
+        char file_name[32];
+        int pcnt;
 
+        pcnt = sscanf(cmd, "%31s %255s %31s", directive, host, version);
+        char *str_temp;
+        str_temp = (char *) strrchr((char *)host, '/'); 
+        
+        int i=0;
+        while(*str_temp != '\0')
+        {
+            file_name[i] = *(str_temp);
+            i++;
+            str_temp++;
+        }
+        file_name[i] = '\0';
+        //printf("%s\n", file_name);
+
+        //char * file_path = strcat("media", file_name);
+        //printf("%s\n", file_path);
+        inputStream = fopen("media/sample.ts", "rb");
+        }
 		p = strtok(NULL, "\r\n");
 		
 		if ((p = strstr(p, "CSeq")) != NULL){
@@ -302,7 +312,7 @@ void parse_rtsp(){
 			}	
 		}
 	}
-    printf(".....adsf");	
+
 	if(streamer != NULL && streamer->rtcp_sock != 0)
     {
 		while((str_len = read(streamer->rtcp_sock, cmd, BUF_SIZE)) > 0);

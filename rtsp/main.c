@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     static u_short port = 3005;
     char base_path [256] = "";
 
-    printf("==============================");
+    printf("============================\n");
     printf("ThreeGuys RTSP Server Start \n");
     
     /* Configuration File : media file directory & port */
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
                 
     printf("RTSP port : %d. \n", port);
     printf("Default Media Path : %s. \n", base_path);
-    printf("==============================");
+    printf("============================\n");
 
     /* Server Socket Configuration */
 
