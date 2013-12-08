@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <signal.h>
 
 #include "rtp.h"
 #include "streamer.h"
@@ -157,7 +158,6 @@ void playStream(STREAMER* streamer){
 			if((i+1)%16 == 0)
 				printf("\n");
 		}*/
-		printf("Just Before Send ! (PLAY) \n");
 
 		if(!streamer->transportMode) // 0x0 : TCP
         {
@@ -167,18 +167,22 @@ void playStream(STREAMER* streamer){
 		}
         else
         {
-            printf("second\n");
 			int errorno = sendto(streamer->rtp_sock, rtppacket+4, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendRtpAddr), sizeof(streamer->sendRtpAddr));
-			printf("udp called : %d error no : %d send it to port : %d\n", t, errorno, ntohs(streamer->sendRtpAddr.sin_port));
+		//	printf("udp called : %d error no : %d send it to port : %d\n", t, errorno, ntohs(streamer->sendRtpAddr.sin_port));
 		}
 	}
+
+	printf("\n\n\n\n While Finished \n\n\n\n");
 }
 
 void pauseStream(STREAMER *streamer){
-
+	kill(streamer->playpid, SIGQUIT);
 }
 
 void removeStreamer(STREAMER *streamer){
+	
+	printf(" process of pid %d will be killed ", streamer->playpid);
+	kill(streamer->playpid, SIGQUIT);
 	free(streamer);	
 }
 

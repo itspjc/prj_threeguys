@@ -138,8 +138,20 @@ void handle_play(){
 	printf("-------------S -> C-------------\n"
 		"%s\n", res_play);
     write(rtsp_sock,res_play,strlen(res_play));
-	
-	playStream(streamer);	
+	int pid;
+	pid = fork();
+	if(pid>0){
+		printf("\n\n\n\nmother process %d : %d\n\n\n\n", getpid(), pid);
+		streamer->playpid=pid;
+	}
+	else if(pid==0){
+		printf("\n\n\nchild process : %d\n\n\n\n", getpid(),pid);
+		playStream(streamer);	
+	}
+	else if(pid==-1){
+		perror("fork error : ");
+		exit(0);
+	}
 }
 
 void handle_teardown(){
@@ -171,7 +183,7 @@ void handle_pause(){
 	printf("-------------S -> C-------------\n"
 		"%s\n", res_pause);
     write(rtsp_sock,res_pause,strlen(res_pause));
-
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n PAUSE!!! \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	pauseStream(streamer);
 }
 
@@ -182,7 +194,9 @@ void parse_rtsp(){
 	if((str_len = read(rtsp_sock, cmd, BUF_SIZE)) > 0){
 		printf("-------------C -> S-------------\n"
 			"%s\n", cmd);
-		
+	
+		printf("my PID = %d\n", getpid());
+	
 		p = strtok(cmd, "\r\n");
 		if (strstr(p,"OPTIONS") != NULL){
 			rtspCmdType = RTSP_OPTIONS;
@@ -280,6 +294,7 @@ void parse_rtsp(){
 		case RTSP_SETUP : printf("setup\n"); handle_setup(); break;
 		case RTSP_PLAY : printf("play\n"); handle_play(); break;
 		case RTSP_TEARDOWN : printf("teardown\n"); handle_teardown(); break;
+		case RTSP_PAUSE : printf("pause\n"); handle_pause();break; 
 		default : printf("Not implemented\n"); return;
 	}
 }
