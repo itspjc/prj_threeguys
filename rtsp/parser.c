@@ -194,8 +194,6 @@ void parse_rtsp(){
 	if((str_len = read(rtsp_sock, cmd, BUF_SIZE)) > 0){
 		printf("-------------C -> S-------------\n"
 			"%s\n", cmd);
-	
-		printf("my PID = %d\n", getpid());
 
 		p = strtok(cmd, "\r\n");
 		if (strstr(p,"OPTIONS") != NULL){
@@ -243,45 +241,81 @@ void parse_rtsp(){
 			exit(-1);
 		}
 */
+        hostaddr[0] = '1';
+        hostaddr[1] = '9';
+        hostaddr[2] = '2';
+        hostaddr[3] = '.';
+        hostaddr[4] = '1';
+        hostaddr[5] = '6';
+        hostaddr[6] = '8';
+        hostaddr[7] = '.';
+        hostaddr[8] = '5';
+        hostaddr[9] = '6';
+        hostaddr[10] = '.';
+        hostaddr[11] = '1';
+        hostaddr[12] = '0';
+        hostaddr[13] = '2';
+        hostaddr[14] = ':';
+        hostaddr[15] = '3';
+        hostaddr[16] = '0';
+        hostaddr[17] = '0';
+        hostaddr[18] = '5';
+        hostaddr[19] = '\0';
+
         if(rtspCmdType == RTSP_OPTIONS)
         {
-        char directive[32];
-        char host[256];
-        char version[32];
-        char file_name[32];
-        int pcnt;
+            char directive[32];
+            char host[256];
+            char version[32];
+            char file_name[32];
+            int pcnt;
 
-        pcnt = sscanf(cmd, "%31s %255s %31s", directive, host, version);
-        char *str_temp;
-        str_temp = (char *) strrchr((char *)host, '/'); 
-        
-        int i=0;
-        while(*str_temp != '\0')
-        {
-            file_name[i] = *(str_temp);
-            i++;
-            str_temp++;
+            pcnt = sscanf(cmd, "%31s %255s %31s", directive, host, version);
+            char *str_temp;
+            str_temp = (char *) strrchr((char *)host, '/'); 
+       
+            file_name[0] = '.';
+            file_name[1] = '.';
+            file_name[2] = '/';
+            file_name[3] = '.';
+            file_name[4] = '.';
+            file_name[5] = '/';
+            file_name[6] = 'm';
+            file_name[7] = 'e';
+            file_name[8] = 'd';
+            file_name[9] = 'i';
+            file_name[10] = 'a';
+            
+            int i = 11;
+            while(*str_temp != '\0')
+            {
+                file_name[i] = *(str_temp);
+                
+                if(i!=0)
+                    filename[i-12]= *(str_temp);
+                i++;
+                str_temp++;
+            }
+            file_name[i] = '\0';
+            filename[i-12]='\0';
+            inputStream = fopen(file_name, "rb");
         }
-        file_name[i] = '\0';
-        //printf("%s\n", file_name);
-
-        //char * file_path = strcat("media", file_name);
-        //printf("%s\n", file_path);
-        inputStream = fopen("media/sample.ts", "rb");
-        }
-		p = strtok(NULL, "\r\n");
+		    
+        p = strtok(NULL, "\r\n");
 		
-		if ((p = strstr(p, "CSeq")) != NULL){
-			p += 5;
+		if ((p = strstr(p, "CSeq")) != NULL)
+        {
+            p += 5;
 			int i = 0;
 			while(*p != 0)
-				cseq[i++] = *(p++);
+			    cseq[i++] = *(p++);
 			cseq[i] = 0;
-		} else{
-			printf("CSeq error\n");
-		//	close(rtsp_sock);
-		//	exit(-1);
-		}
+		} 
+        else
+        {
+            printf("CSeq error\n");
+        }
+		    
 
 		if (rtspCmdType == RTSP_SETUP)
     	{
