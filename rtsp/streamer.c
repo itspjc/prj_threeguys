@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <signal.h>
+#include <time.h>
 
 #include "rtp.h"
 #include "streamer.h"
@@ -112,11 +113,19 @@ void buildRTPHeader(STREAMER* streamer, char* rtppacket, RTP_PKT* rtp_pkt){
 }
 
 void playStream(STREAMER* streamer){
-	int i, j, t, p = 0;
+	int i, j, t, p, byteCount = 0;
 	char buffer[255];
 	char rtppacket[sizeof(RTP_PKT) + 4];
+	time_t startTime, currentTime;	
+	time(&startTime);
 
 	while(1){
+		
+		time(&currentTime);
+		while(byteCount > (time(&currentTime) - startTime ) *3800 * 1000 ){
+		sleep(100);
+		}
+		
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
 		memset(buffer, 0, sizeof(buffer));
 		memset(rtppacket, 0, sizeof(rtppacket));
@@ -168,7 +177,8 @@ void playStream(STREAMER* streamer){
         else
         {
 			int errorno = sendto(streamer->rtp_sock, rtppacket+4, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendRtpAddr), sizeof(streamer->sendRtpAddr));
-		//	printf("udp called : %d error no : %d send it to port : %d\n", t, errorno, ntohs(streamer->sendRtpAddr.sin_port));
+			byteCount = byteCount + 575;	
+	//	printf("udp called : %d error no : %d send it to port : %d\n", t, errorno, ntohs(streamer->sendRtpAddr.sin_port));
 		}
 	}
 

@@ -63,7 +63,8 @@ void handle_describe()
         "Content-Base: %s/\r\n"
         "Content-Type: application/sdp\r\n"
         "Content-Length: %d\r\n\r\n"
-       	"%s",
+       	//"a=range:npt=0-7.712000\r\n"  // Time 
+	"%s",
         cseq,
         date,
         URLbuf,
