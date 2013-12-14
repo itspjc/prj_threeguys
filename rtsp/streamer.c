@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <signal.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "rtp.h"
 #include "streamer.h"
@@ -34,7 +35,9 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
 
 	streamer->sendRtpAddr = sendRtpAddr;
 	streamer->sendRtcpAddr = sendRtcpAddr;
-
+	streamer->pauseSet = 0;
+	streamer->pauseTime = 0;
+	
 	recvAddr.sin_family      = AF_INET;   
 	recvAddr.sin_addr.s_addr = INADDR_ANY;   
 	
@@ -47,8 +50,8 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
 		if(!transportMode) // 0x0 : TCP
         {
 		    rtp_sock = socket(AF_INET, SOCK_STREAM, 0);
-			if(connect(rtp_sock, (struct sockaddr*)&sendRtpAddr, sizeof(sendRtpAddr)) < 0)
-				printf("Connect error\n");
+	//		if(connect(rtp_sock, (struct sockaddr*)&sendRtpAddr, sizeof(sendRtpAddr)) < 0)
+	//			printf("Connect error\n");
 		}
         else
 		{   
@@ -62,8 +65,8 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
         {
 
 			rtcp_sock = socket(AF_INET, SOCK_STREAM, 0);
-			if(connect(rtcp_sock, (struct sockaddr*)&sendRtcpAddr, sizeof(sendRtcpAddr)) < 0)
-				printf("Connect error\n");
+	//		if(connect(rtcp_sock, (struct sockaddr*)&sendRtcpAddr, sizeof(sendRtcpAddr)) < 0)
+	//			printf("Connect error\n");
     		recvAddr.sin_port = htons(port + 1);
 
 			if (bind(rtcp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0)
@@ -115,14 +118,14 @@ void playStream(STREAMER* streamer){
 	int i, j, t, p, bitCount = 0;
 	char buffer[255];
 	char rtppacket[sizeof(RTP_PKT) + 4];
-	time_t startTime, currentTime;	
-	time(&startTime);
-
+	time_t startTime_t, currentTime;	
+	time(&startTime_t);
+	streamer->startTime = startTime_t;
+	printf("startTime : %d\n", streamer->startTime);
 	while(1){
-		
 		time(&currentTime);
-		while( bitCount > (currentTime-startTime)*(4*1024*1024 + 400000) ){
-		sleep(10);
+		while( bitCount > (currentTime-startTime_t)*(4*1024*1024 + 400000) ){
+		usleep(100000);
 		time(&currentTime);
 		}
 		
@@ -180,13 +183,22 @@ void playStream(STREAMER* streamer){
 			bitCount = bitCount + 4608;// which means (12+188*3) * 8 = (bytes per one packet) * (8 bit per byte)	
 	//	printf("udp called : %d error no : %d send it to port : %d\n", t, errorno, ntohs(streamer->sendRtpAddr.sin_port));
 		}
+	while(streamer->pauseSet){;}	
+
 	}
 
 	printf("\n\n\n\n While Finished \n\n\n\n");
 }
 
 void pauseStream(STREAMER *streamer){
-	kill(streamer->playpid, SIGQUIT);
+	time_t currentTime;
+	streamer->pauseSet = 1;
+	time(&currentTime);
+	streamer->pauseTime = currentTime - (streamer->startTime);
+
+	printf("currentTime : %d, StartTime : %d, pauseTime : %d\n", currentTime, streamer->startTime, streamer->pauseTime);	
+	//kill(streamer->playpid, SIGQUIT);
+	//time(&(streamer->pauseTime));
 }
 
 void removeStreamer(STREAMER *streamer){

@@ -15,6 +15,9 @@ typedef struct streamer
 	int rtcp_sock;
 	
 	int playpid;
+	int pauseSet;	
+	time_t startTime;
+	time_t pauseTime;
 
 	FILE* input;
 

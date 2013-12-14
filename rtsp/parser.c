@@ -130,21 +130,25 @@ void handle_play(){
     char res_play[1024];
 	char date[256];
 	getDate(date);
+
     sprintf(res_play,
         "RTSP/1.0 200 OK\r\n"
 		"CSeq: %s\r\n"
         "Date: %s\r\n"
-        "Range: npt=0.000-\r\n"
+        "Range: npt=%d.000-214.000\r\n"
         "Session: %i\r\n"
         "RTP-Info: url=rtsp://192.168.56.102:3005\r\n\r\n",
         cseq,
         date,
+	streamer->pauseTime,
         rtspSessionID);
 
 	printf("-------------S -> C-------------\n"
 		"%s\n", res_play);
     write(rtsp_sock,res_play,strlen(res_play));
 	int pid;
+	if(streamer->pauseSet){ streamer->pauseSet = 0; }
+	else{
 	pid = fork();
 	if(pid>0){
 		printf("\n\n\n\nmother process %d : %d\n\n\n\n", getpid(), pid);
@@ -157,6 +161,7 @@ void handle_play(){
 	else if(pid==-1){
 		perror("fork error : ");
 		exit(0);
+	}
 	}
 }
 
