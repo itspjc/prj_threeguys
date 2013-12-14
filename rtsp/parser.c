@@ -44,7 +44,10 @@ void handle_describe()
         "s=\r\n"
         "t=0 0\r\n"                            
         "m=video 0 RTP/AVP %d\r\n"
-        "c=IN IP4 0.0.0.0\r\n",
+	"a=range:npt=0-214.000000\r\n"
+	"a=length:npt=214.000000\r\n"
+        "a=AvgBitRate:integer;4194304\r\n"
+	"c=IN IP4 0.0.0.0\r\n",
         rand(),
         hostaddr,
 		RTP_PAYLOAD_MPEG2_TS);
@@ -63,7 +66,9 @@ void handle_describe()
         "Content-Base: %s/\r\n"
         "Content-Type: application/sdp\r\n"
         "Content-Length: %d\r\n\r\n"
-       	//"a=range:npt=0-7.712000\r\n"  // Time 
+      // 	"a=range:npt=0-7.712000\r\n"  // Time 
+	//"a=length:npt=7.712000\r\n"
+	
 	"%s",
         cseq,
         date,
@@ -175,11 +180,11 @@ void handle_pause(){
 	getDate(date);
     char res_pause[1024];
     sprintf(res_pause,
-        "RTSP/1.0 200 OK\r\n"
+        "RTSP/1. 200 OK\r\n"
 		"CSeq: %s\r\n"
-		"Date: %s\r\n",
+		"Session : %i\r\n\r\n",
         cseq,
-		date);
+		rtspSessionID);
 
 	printf("-------------S -> C-------------\n"
 		"%s\n", res_pause);
@@ -217,8 +222,8 @@ void parse_rtsp(){
 			p += 6;
 		}else{
 			printf("Command error\n");
-		//	close(rtsp_sock);
-		//	exit(-1);
+			close(rtsp_sock);
+			exit(-1);
 		}
 /*
 		if(strstr(p, "rtsp://") != NULL && rtspCmdType == RTSP_OPTIONS)

@@ -67,8 +67,7 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
     		recvAddr.sin_port = htons(port + 1);
 
 			if (bind(rtcp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0)
-            {
-                printf("%d \n", streamer->rtp_sock);
+            {	
 				streamer->rtp_sock = rtp_sock;
 				streamer->rtcp_sock = rtcp_sock;
 				streamer->serverRTPPort = port;
@@ -122,8 +121,9 @@ void playStream(STREAMER* streamer){
 	while(1){
 		
 		time(&currentTime);
-		while(byteCount > (time(&currentTime) - startTime ) *3800 * 1000 ){
-		sleep(100);
+		while( byteCount > (currentTime-startTime)*(4*1024*1024 + 400000) ){
+		sleep(10);
+		time(&currentTime);
 		}
 		
 		memset(&rtp_pkt, 0, sizeof(RTP_PKT));
@@ -177,7 +177,7 @@ void playStream(STREAMER* streamer){
         else
         {
 			int errorno = sendto(streamer->rtp_sock, rtppacket+4, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendRtpAddr), sizeof(streamer->sendRtpAddr));
-			byteCount = byteCount + 575;	
+			byteCount = byteCount + 4608;	
 	//	printf("udp called : %d error no : %d send it to port : %d\n", t, errorno, ntohs(streamer->sendRtpAddr.sin_port));
 		}
 	}
@@ -193,6 +193,6 @@ void removeStreamer(STREAMER *streamer){
 	
 	printf(" process of pid %d will be killed ", streamer->playpid);
 	kill(streamer->playpid, SIGQUIT);
-	free(streamer);	
+	free(streamer);
 }
 
