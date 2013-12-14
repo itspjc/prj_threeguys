@@ -138,20 +138,20 @@ void handle_play(){
 	printf("-------------S -> C-------------\n"
 		"%s\n", res_play);
     write(rtsp_sock,res_play,strlen(res_play));
-	int pid;
+/*	int pid_rtp;
 	pid = fork();
 	if(pid>0){
 		printf("\n\n\n\nmother process %d : %d\n\n\n\n", getpid(), pid);
 		streamer->playpid=pid;
 	}
 	else if(pid==0){
-		printf("\n\n\nchild process : %d\n\n\n\n", getpid(),pid);
+		printf("\n\n\nchild process : %d\n\n\n\n", getpid(),pid);*/
 		playStream(streamer);	
-	}
+/*	}
 	else if(pid==-1){
 		perror("fork error : ");
 		exit(0);
-	}
+	}*/
 }
 
 void handle_teardown(){
@@ -183,7 +183,6 @@ void handle_pause(){
 	printf("-------------S -> C-------------\n"
 		"%s\n", res_pause);
     write(rtsp_sock,res_pause,strlen(res_pause));
-	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n PAUSE!!! \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 	pauseStream(streamer);
 }
 
@@ -233,7 +232,8 @@ void parse_rtsp(){
 			p++;
 			while(*p != ' ')
 				filename[i++] = *(p++);
-			filename[i] = 0;
+			filename[i-1] = 0;
+			printf("filename : %s\n", filename);
 		}else{
 			printf("URL error\n");
 		//	close(rtsp_sock);
@@ -284,10 +284,6 @@ void parse_rtsp(){
 		}
 	}
 	
-	if(streamer != NULL && streamer->rtcp_sock != 0){
-		while((str_len = read(streamer->rtcp_sock, cmd, BUF_SIZE)) > 0);
-	}
-
 	switch(rtspCmdType){
 		case RTSP_OPTIONS : printf("option\n"); handle_option(); break;
 		case RTSP_DESCRIBE : printf("describe\n"); handle_describe(); break;

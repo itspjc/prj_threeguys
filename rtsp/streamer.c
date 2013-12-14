@@ -66,8 +66,7 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
     		recvAddr.sin_port = htons(port + 1);
 
 			if (bind(rtcp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0)
-            {
-                printf("%d \n", streamer->rtp_sock);
+            {	
 				streamer->rtp_sock = rtp_sock;
 				streamer->rtcp_sock = rtcp_sock;
 				streamer->serverRTPPort = port;
@@ -176,13 +175,13 @@ void playStream(STREAMER* streamer){
 }
 
 void pauseStream(STREAMER *streamer){
-	kill(streamer->playpid, SIGQUIT);
+//	kill(streamer->playpid, SIGQUIT);
 }
 
 void removeStreamer(STREAMER *streamer){
 	
-	printf(" process of pid %d will be killed ", streamer->playpid);
+/*	printf(" process of pid %d will be killed ", streamer->playpid);
 	kill(streamer->playpid, SIGQUIT);
-	free(streamer);	
+	free(streamer);	*/
 }
 
