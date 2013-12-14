@@ -112,7 +112,7 @@ void buildRTPHeader(STREAMER* streamer, char* rtppacket, RTP_PKT* rtp_pkt){
 }
 
 void playStream(STREAMER* streamer){
-	int i, j, t, p, byteCount = 0;
+	int i, j, t, p, bitCount = 0;
 	char buffer[255];
 	char rtppacket[sizeof(RTP_PKT) + 4];
 	time_t startTime, currentTime;	
@@ -121,7 +121,7 @@ void playStream(STREAMER* streamer){
 	while(1){
 		
 		time(&currentTime);
-		while( byteCount > (currentTime-startTime)*(4*1024*1024 + 400000) ){
+		while( bitCount > (currentTime-startTime)*(4*1024*1024 + 400000) ){
 		sleep(10);
 		time(&currentTime);
 		}
@@ -177,7 +177,7 @@ void playStream(STREAMER* streamer){
         else
         {
 			int errorno = sendto(streamer->rtp_sock, rtppacket+4, sizeof(RTP_PKT), 0, (struct sockaddr*)&(streamer->sendRtpAddr), sizeof(streamer->sendRtpAddr));
-			byteCount = byteCount + 4608;	
+			bitCount = bitCount + 4608;// which means (12+188*3) * 8 = (bytes per one packet) * (8 bit per byte)	
 	//	printf("udp called : %d error no : %d send it to port : %d\n", t, errorno, ntohs(streamer->sendRtpAddr.sin_port));
 		}
 	}
