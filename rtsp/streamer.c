@@ -33,8 +33,8 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
 	sendRtcpAddr.sin_family = AF_INET;
 	sendRtcpAddr.sin_port   = htons(rtcp_port);
 
-	streamer->sendRtpAddr = sendRtpAddr;
-	streamer->sendRtcpAddr = sendRtcpAddr;
+	memcpy((void *)&(streamer->sendRtpAddr),(void *) &sendRtpAddr, sendRtpLen);
+	memcpy((void *)&(streamer->sendRtcpAddr),(void *) &sendRtcpAddr, sendRtcpLen);
 	streamer->pauseSet = 0;
 	streamer->pauseTime = 0;
 	
@@ -48,25 +48,28 @@ STREAMER* initStreamer(const int rtsp_sock, const int rtp_port, const int rtcp_p
     for (port = 6970; port < 7000 ; port += 2)
     {
 		if(!transportMode) // 0x0 : TCP
-        {
+		{
 		    rtp_sock = socket(AF_INET, SOCK_STREAM, 0);
-	//		if(connect(rtp_sock, (struct sockaddr*)&sendRtpAddr, sizeof(sendRtpAddr)) < 0)
-	//			printf("Connect error\n");
-		}
-        else
-		{   
+			if(connect(rtp_sock, (struct sockaddr*)&sendRtpAddr, sizeof(sendRtpAddr)) < 0)
+				printf("Connect error\n");
+        }
+		else
             rtp_sock = socket(AF_INET, SOCK_DGRAM, 0);                     
-    	}
         
         recvAddr.sin_port = htons(port);
   	    
         
         if (bind(rtp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0)
         {
+			if(!transportMode)		
+			{
+				rtcp_sock = socket(AF_INET, SOCK_STREAM, 0);
+				if(connect(rtcp_sock, (struct sockaddr*)&sendRtcpAddr, sizeof(sendRtcpAddr)) < 0)
+					printf("Connect error\n");
+			}
+			else
+				rtcp_sock = socket(AF_INET, SOCK_DGRAM, 0);
 
-			rtcp_sock = socket(AF_INET, SOCK_STREAM, 0);
-	//		if(connect(rtcp_sock, (struct sockaddr*)&sendRtcpAddr, sizeof(sendRtcpAddr)) < 0)
-	//			printf("Connect error\n");
     		recvAddr.sin_port = htons(port + 1);
 
 			if (bind(rtcp_sock,(struct sockaddr*)&recvAddr,sizeof(recvAddr)) == 0)
