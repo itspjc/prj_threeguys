@@ -155,6 +155,7 @@ void handle_play(){
 		streamer->playpid=pid;
 	}
 	else if(pid==0){
+		close(rtsp_sock);
 		printf("\n\n\nchild process : %d\n\n\n\n", getpid(),pid);
 		playStream(streamer);	
 	}
@@ -358,14 +359,14 @@ void parse_rtsp(){
 		}
 	}
 
-/*	이게 이제 진짜로 읽을려고 해서, 이 부분도 fork로 따로 들어줘야 할 거 같음, 아니면 무한루프돔여기서
- *	if(streamer != NULL && streamer->rtcp_sock != 0)
+/*	이게 이제 진짜로 읽을려고 해서, 이 부분도 fork로 따로 들어줘야 할 거 같음, 아니면 무한루프돔여기서 
+ 	if(streamer != NULL && streamer->rtcp_sock != 0)
     {
 		while((str_len = read(streamer->rtcp_sock, cmd, BUF_SIZE)) > 0){
-			
+			printf("rtcp : %s\n", cmd);		
 		}
-	}*/
-
+	}
+*/
 	switch(rtspCmdType){
 		case RTSP_OPTIONS : printf("option\n"); handle_option(); break;
 		case RTSP_DESCRIBE : printf("describe\n"); handle_describe(); break;
